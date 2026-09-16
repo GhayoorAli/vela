@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String
+  image       String
+  products    Product[]
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String
+  description String
+  price       Int
+  compareAt   Int?
+  fabric      String
+  /// Snap Camera Kit Lens ID for this product's AR try-on lens (built in Lens Studio).
+  tryOnLensId      String?
+  /// Optional Lens Group override; falls back to CAMERA_KIT_LENS_GROUP_ID.
+  tryOnLensGroupId String?
+  images      String
+  colors      String
+  sizes       String
+  featured    Boolean     @default(false)
+  inStock     Boolean     @default(true)
+  stock       Int         @default(24)
+  categoryId  String
+  category    Category    @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  number    String      @unique
+  email     String
+  name      String
+  phone     String
+  address   String
+  city      String
+  method    String      @default("cod")
+  status    String      @default("pending")
+  total     Int
+  notes     String      @default("")
+  createdAt DateTime    @default(now())
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  name      String
+  price     Int
+  qty       Int
+  size      String
+  color     String
+}
