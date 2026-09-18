@@ -2,19 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (display-mode: standalone) {
+  html {
+    overscroll-behavior-y: contain;
+  }
+
+  .hide-standalone {
+    display: none;
+  }
+
+  .app-header {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+html.standalone {
+  overscroll-behavior-y: contain;
+}
+
+html.standalone .hide-standalone {
+  display: none;
+}
+
+html.standalone .app-header {
+  padding-top: env(safe-area-inset-top);
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
 html,
 body {
   min-height: 100%;
 }
 
 body {
-  background: #f6f1ea;
-  color: #161412;
+  background: #f3eee6;
+  color: #0c0b0a;
+  font-feature-settings: "ss01" on, "cv11" on;
 }
 
 ::selection {
-  background: #9a3f2b;
-  color: #f6f1ea;
+  background: #0c0b0a;
+  color: #f3eee6;
 }
 
 input,
@@ -30,4 +70,84 @@ button {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@layer components {
+  .eyebrow {
+    @apply font-sans text-[10px] font-medium uppercase tracking-[0.32em] text-ink/45;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 font-sans text-[11px] font-medium uppercase tracking-[0.22em] transition-all duration-300;
+    transition-timing-function: var(--ease-expo);
+  }
+
+  .btn-solid {
+    @apply inline-flex items-center justify-center gap-2 bg-ink px-7 py-3.5 font-sans text-[11px] font-medium uppercase tracking-[0.22em] text-paper transition-all duration-300 hover:bg-ink/80;
+    transition-timing-function: var(--ease-expo);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 border border-current px-7 py-3.5 font-sans text-[11px] font-medium uppercase tracking-[0.22em] transition-all duration-300 hover:bg-ink hover:text-paper;
+    transition-timing-function: var(--ease-expo);
+  }
+
+  .btn-light {
+    @apply inline-flex items-center justify-center gap-2 bg-paper px-7 py-3.5 font-sans text-[11px] font-medium uppercase tracking-[0.22em] text-ink transition-all duration-300;
+    transition-timing-function: var(--ease-expo);
+  }
+  .btn-light:hover {
+    background: #faf7f2;
+  }
+
+  .field {
+    @apply w-full border-0 border-b border-ink/20 bg-transparent px-0 py-3.5 font-sans text-sm outline-none transition placeholder:text-ink/35 focus:border-ink;
+  }
+
+  .link-line {
+    @apply relative inline-flex after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:after:scale-x-100;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee 36s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.9s var(--ease-expo) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .animate-fade-up {
+    animation: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
 }

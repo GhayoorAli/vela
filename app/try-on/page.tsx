@@ -84,16 +84,16 @@ function Notice({
 }) {
   return (
     <main className="flex min-h-[100dvh] flex-col items-center justify-center bg-ink px-6 text-center text-paper">
-      <p className="font-sans text-[11px] uppercase tracking-[0.28em] text-paper/55">
+      <p className="font-sans text-[10px] font-medium uppercase tracking-[0.32em] text-paper/45">
         Live AR fitting room
       </p>
-      <h1 className="mt-4 max-w-md font-serif text-4xl leading-tight">{title}</h1>
-      <div className="mt-4 max-w-md font-sans text-sm leading-relaxed text-paper/75 [&_code]:rounded [&_code]:bg-paper/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[12px]">
+      <h1 className="mt-5 max-w-lg font-serif text-5xl leading-[1.05] tracking-tight">{title}</h1>
+      <div className="mt-5 max-w-md font-sans text-sm font-light leading-relaxed text-paper/65 [&_code]:bg-paper/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[12px]">
         {children}
       </div>
       <Link
         href={backHref}
-        className="mt-10 border border-paper/40 px-6 py-3 font-sans text-[11px] uppercase tracking-[0.2em] text-paper/85"
+        className="mt-12 border border-paper/35 px-7 py-3.5 font-sans text-[11px] uppercase tracking-[0.22em] text-paper/90 transition hover:bg-paper hover:text-ink"
       >
         Back
       </Link>

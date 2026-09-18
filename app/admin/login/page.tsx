@@ -9,12 +9,12 @@ export default async function AdminLoginPage({
 }) {
   const { error } = await searchParams;
   return (
-    <div className="flex min-h-[70vh] items-center justify-center px-4">
-      <form action={loginAdmin} className="w-full max-w-sm border border-ink/10 bg-paper p-8">
-        <p className="font-sans text-[11px] uppercase tracking-[0.22em] text-ink/45">Vela</p>
-        <h1 className="mt-2 font-serif text-4xl">Admin</h1>
-        <p className="mt-2 font-sans text-sm text-ink/55">
-          Default password for local: <code>vela-admin</code>
+    <div className="flex min-h-[80vh] items-center justify-center bg-paper px-4">
+      <form action={loginAdmin} className="w-full max-w-md bg-mist p-10">
+        <p className="eyebrow">Vela</p>
+        <h1 className="mt-3 font-serif text-5xl tracking-tight">Admin</h1>
+        <p className="mt-3 font-sans text-sm text-ink/50">
+          Default password for local: <code className="text-ink">vela-admin</code>
         </p>
         {error && <p className="mt-4 font-sans text-sm text-rust">Wrong password.</p>}
         <input
@@ -22,9 +22,9 @@ export default async function AdminLoginPage({
           type="password"
           required
           placeholder="Password"
-          className="mt-6 w-full border border-ink/15 bg-transparent px-3 py-3 font-sans text-sm"
+          className="field mt-8"
         />
-        <button type="submit" className="mt-4 w-full bg-ink py-3 font-sans text-[11px] uppercase tracking-[0.2em] text-paper">
+        <button type="submit" className="btn-solid mt-8 w-full">
           Sign in
         </button>
       </form>
