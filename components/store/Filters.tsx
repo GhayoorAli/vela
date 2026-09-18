@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
 const SIZES = ["XS", "S", "M", "L", "XL", "28", "30", "32", "34", "36", "One size"];
@@ -62,12 +62,17 @@ export function FilterSidebar({
   }
 
   const filters = (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <div>
-        <p className="font-sans text-[11px] uppercase tracking-[0.2em] text-ink/50">Category</p>
-        <ul className="mt-3 space-y-2">
+        <p className="eyebrow">Category</p>
+        <ul className="mt-4 space-y-2.5">
           <li>
-            <a href="/shop" className={`font-sans text-sm ${pathname === "/shop" && !params.get("q") ? "text-ink" : "text-ink/60"}`}>
+            <a
+              href="/shop"
+              className={`font-sans text-sm ${
+                pathname === "/shop" && !params.get("q") ? "text-ink" : "text-ink/50 hover:text-ink"
+              }`}
+            >
               All
             </a>
           </li>
@@ -75,7 +80,9 @@ export function FilterSidebar({
             <li key={c.slug}>
               <a
                 href={`/shop/${c.slug}`}
-                className={`font-sans text-sm ${pathname.endsWith(c.slug) ? "text-ink" : "text-ink/60"}`}
+                className={`font-sans text-sm ${
+                  pathname.endsWith(c.slug) ? "text-ink" : "text-ink/50 hover:text-ink"
+                }`}
               >
                 {c.name}
               </a>
@@ -85,15 +92,17 @@ export function FilterSidebar({
       </div>
 
       <div>
-        <p className="font-sans text-[11px] uppercase tracking-[0.2em] text-ink/50">Size</p>
-        <div className="mt-3 flex flex-wrap gap-1.5">
+        <p className="eyebrow">Size</p>
+        <div className="mt-4 flex flex-wrap gap-1.5">
           {SIZES.map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => setParam("size", selected.size === s ? "" : s)}
-              className={`px-2 py-1 font-sans text-[11px] ${
-                selected.size === s ? "bg-ink text-paper" : "border border-ink/15 text-ink/70"
+              className={`px-2.5 py-1.5 font-sans text-[11px] transition ${
+                selected.size === s
+                  ? "bg-ink text-paper"
+                  : "border border-ink/15 text-ink/70 hover:border-ink/40"
               }`}
             >
               {s}
@@ -103,15 +112,17 @@ export function FilterSidebar({
       </div>
 
       <div>
-        <p className="font-sans text-[11px] uppercase tracking-[0.2em] text-ink/50">Color</p>
-        <div className="mt-3 flex flex-wrap gap-1.5">
+        <p className="eyebrow">Color</p>
+        <div className="mt-4 flex flex-wrap gap-1.5">
           {COLORS.map((c) => (
             <button
               key={c}
               type="button"
               onClick={() => setParam("color", selected.color === c ? "" : c)}
-              className={`px-2 py-1 font-sans text-[11px] ${
-                selected.color === c ? "bg-ink text-paper" : "border border-ink/15 text-ink/70"
+              className={`px-2.5 py-1.5 font-sans text-[11px] transition ${
+                selected.color === c
+                  ? "bg-ink text-paper"
+                  : "border border-ink/15 text-ink/70 hover:border-ink/40"
               }`}
             >
               {c}
@@ -121,30 +132,31 @@ export function FilterSidebar({
       </div>
 
       <div>
-        <p className="font-sans text-[11px] uppercase tracking-[0.2em] text-ink/50">Price</p>
-        <div className="mt-3 flex gap-2">
+        <p className="eyebrow">Price</p>
+        <div className="mt-4 flex gap-4">
           <input
             type="number"
             placeholder="Min"
             defaultValue={selected.min}
-            className="w-full border border-ink/15 bg-transparent px-2 py-1.5 font-sans text-sm"
+            className="field"
             onBlur={(e) => setParam("minPrice", e.target.value)}
           />
           <input
             type="number"
             placeholder="Max"
             defaultValue={selected.max}
-            className="w-full border border-ink/15 bg-transparent px-2 py-1.5 font-sans text-sm"
+            className="field"
             onBlur={(e) => setParam("maxPrice", e.target.value)}
           />
         </div>
       </div>
 
-      <label className="flex items-center gap-2 font-sans text-sm">
+      <label className="flex items-center gap-3 font-sans text-sm">
         <input
           type="checkbox"
           checked={selected.tryon === "1"}
           onChange={(e) => setParam("tryon", e.target.checked ? "1" : "")}
+          className="accent-ink"
         />
         Live try-on only
       </label>
@@ -152,7 +164,7 @@ export function FilterSidebar({
       <button
         type="button"
         onClick={clear}
-        className="font-sans text-[11px] uppercase tracking-[0.16em] text-ink/45"
+        className="link-line font-sans text-[11px] uppercase tracking-[0.18em] text-ink/40"
       >
         Clear filters
       </button>
@@ -161,13 +173,13 @@ export function FilterSidebar({
 
   return (
     <>
-      <div className="mb-6 flex items-center justify-between gap-4 lg:hidden">
+      <div className="mb-8 flex items-center justify-between gap-4 lg:hidden">
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-2 border border-ink/15 px-3 py-2 font-sans text-[11px] uppercase tracking-[0.16em]"
+          className="inline-flex items-center gap-2 border border-ink/15 px-4 py-2.5 font-sans text-[11px] uppercase tracking-[0.18em]"
         >
-          <SlidersHorizontal size={14} /> Filters
+          <SlidersHorizontal size={14} strokeWidth={1.5} /> Filters
         </button>
         <SortSelect value={selected.sort} onChange={(v) => setParam("sort", v)} />
       </div>
@@ -176,12 +188,12 @@ export function FilterSidebar({
 
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <button type="button" className="absolute inset-0 bg-ink/40" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-0 h-full w-[85%] max-w-sm overflow-y-auto bg-paper p-6">
-            <div className="mb-6 flex items-center justify-between">
-              <p className="font-serif text-2xl">Filters</p>
-              <button type="button" onClick={() => setOpen(false)} className="font-sans text-xs uppercase tracking-wider">
-                Close
+          <button type="button" className="absolute inset-0 bg-ink/50" onClick={() => setOpen(false)} />
+          <div className="absolute left-0 top-0 h-full w-[86%] max-w-sm overflow-y-auto bg-paper p-7">
+            <div className="mb-8 flex items-center justify-between">
+              <p className="font-serif text-3xl">Filters</p>
+              <button type="button" onClick={() => setOpen(false)} aria-label="Close">
+                <X size={18} />
               </button>
             </div>
             {filters}
@@ -205,7 +217,7 @@ export function SortSelect({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="border border-ink/15 bg-transparent px-2 py-2 font-sans text-[11px] uppercase tracking-[0.14em]"
+      className="border-0 bg-transparent font-sans text-[11px] uppercase tracking-[0.16em] outline-none"
     >
       {SORTS.map((s) => (
         <option key={s.value} value={s.value}>
@@ -216,19 +228,17 @@ export function SortSelect({
   );
 }
 
-export function ShopToolbar({
-  count,
-}: {
-  count: number;
-}) {
+export function ShopToolbar({ count }: { count: number }) {
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const sort = params.get("sort") || "featured";
 
   return (
-    <div className="mb-8 hidden items-end justify-between lg:flex">
-      <p className="font-sans text-sm text-ink/55">{count} pieces</p>
+    <div className="mb-10 hidden items-end justify-between border-b border-ink/10 pb-4 lg:flex">
+      <p className="font-sans text-[11px] uppercase tracking-[0.2em] text-ink/40">
+        {count} pieces
+      </p>
       <SortSelect
         value={sort}
         onChange={(v) => {

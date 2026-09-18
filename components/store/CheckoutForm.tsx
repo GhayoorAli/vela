@@ -15,7 +15,7 @@ export function CheckoutForm() {
     return (
       <p className="font-sans text-sm text-ink/60">
         Your bag is empty.{" "}
-        <button type="button" className="underline" onClick={() => router.push("/shop")}>
+        <button type="button" className="link-line" onClick={() => router.push("/shop")}>
           Continue shopping
         </button>
       </p>
@@ -29,45 +29,73 @@ export function CheckoutForm() {
         formData.set("method", method);
         await placeOrder(formData);
       }}
-      className="grid gap-10 lg:grid-cols-5"
+      className="grid gap-16 lg:grid-cols-12"
     >
-      <div className="space-y-4 lg:col-span-3">
-        <h2 className="font-serif text-2xl">Delivery</h2>
-        <input name="name" required placeholder="Full name" className="w-full border border-ink/15 bg-transparent px-3 py-3 font-sans text-sm" />
-        <div className="grid gap-4 sm:grid-cols-2">
-          <input name="email" type="email" required placeholder="Email" className="border border-ink/15 bg-transparent px-3 py-3 font-sans text-sm" />
-          <input name="phone" required placeholder="Phone" className="border border-ink/15 bg-transparent px-3 py-3 font-sans text-sm" />
+      <div className="space-y-2 lg:col-span-7">
+        <p className="eyebrow">01</p>
+        <h2 className="font-serif text-4xl tracking-tight">Delivery</h2>
+        <input name="name" required placeholder="Full name" className="field mt-6" />
+        <div className="grid gap-2 sm:grid-cols-2">
+          <input name="email" type="email" required placeholder="Email" className="field" />
+          <input name="phone" required placeholder="Phone" className="field" />
         </div>
-        <input name="address" required placeholder="Street address" className="w-full border border-ink/15 bg-transparent px-3 py-3 font-sans text-sm" />
-        <input name="city" required placeholder="City" className="w-full border border-ink/15 bg-transparent px-3 py-3 font-sans text-sm" />
-        <textarea name="notes" placeholder="Notes (optional)" rows={3} className="w-full border border-ink/15 bg-transparent px-3 py-3 font-sans text-sm" />
+        <input name="address" required placeholder="Street address" className="field" />
+        <input name="city" required placeholder="City" className="field" />
+        <textarea name="notes" placeholder="Notes (optional)" rows={3} className="field resize-none" />
 
-        <h2 className="pt-4 font-serif text-2xl">Payment</h2>
-        <label className="flex items-start gap-3 border border-ink/15 p-4">
-          <input type="radio" checked={method === "cod"} onChange={() => setMethod("cod")} />
+        <p className="eyebrow pt-12">02</p>
+        <h2 className="font-serif text-4xl tracking-tight">Payment</h2>
+        <label
+          className={`mt-6 flex cursor-pointer items-start gap-4 border p-5 transition ${
+            method === "cod" ? "border-ink bg-ink text-paper" : "border-ink/15"
+          }`}
+        >
+          <input
+            type="radio"
+            checked={method === "cod"}
+            onChange={() => setMethod("cod")}
+            className="mt-1 accent-current"
+          />
           <span>
             <span className="block font-sans text-sm">Cash on delivery</span>
-            <span className="font-sans text-xs text-ink/50">Pay when the order arrives. No card fee.</span>
+            <span className={`font-sans text-xs ${method === "cod" ? "text-paper/60" : "text-ink/50"}`}>
+              Pay when the order arrives. No card fee.
+            </span>
           </span>
         </label>
-        <label className="flex items-start gap-3 border border-ink/15 p-4">
-          <input type="radio" checked={method === "transfer"} onChange={() => setMethod("transfer")} />
+        <label
+          className={`mt-3 flex cursor-pointer items-start gap-4 border p-5 transition ${
+            method === "transfer" ? "border-ink bg-ink text-paper" : "border-ink/15"
+          }`}
+        >
+          <input
+            type="radio"
+            checked={method === "transfer"}
+            onChange={() => setMethod("transfer")}
+            className="mt-1 accent-current"
+          />
           <span>
             <span className="block font-sans text-sm">Bank transfer</span>
-            <span className="font-sans text-xs text-ink/50">We’ll email account details after you place the order.</span>
+            <span className={`font-sans text-xs ${method === "transfer" ? "text-paper/60" : "text-ink/50"}`}>
+              We’ll email account details after you place the order.
+            </span>
           </span>
         </label>
       </div>
 
-      <aside className="lg:col-span-2">
-        <div className="border border-ink/10 p-5">
-          <h2 className="font-serif text-2xl">Order</h2>
-          <ul className="mt-4 space-y-3">
+      <aside className="lg:col-span-5">
+        <div className="sticky top-28 bg-mist p-8">
+          <p className="eyebrow">Your order</p>
+          <h2 className="mt-2 font-serif text-3xl tracking-tight">Summary</h2>
+          <ul className="mt-6 space-y-4">
             {items.map((i) => (
-              <li key={`${i.productId}-${i.size}-${i.color}`} className="flex justify-between gap-3 font-sans text-sm">
+              <li
+                key={`${i.productId}-${i.size}-${i.color}`}
+                className="flex justify-between gap-3 font-sans text-sm"
+              >
                 <span>
                   {i.name} × {i.qty}
-                  <span className="block text-[11px] uppercase tracking-wider text-ink/40">
+                  <span className="block text-[10px] uppercase tracking-[0.16em] text-ink/40">
                     {i.color} · {i.size}
                   </span>
                 </span>
@@ -75,14 +103,11 @@ export function CheckoutForm() {
               </li>
             ))}
           </ul>
-          <div className="mt-4 flex justify-between border-t border-ink/10 pt-4 font-sans text-sm">
+          <div className="mt-6 flex justify-between border-t border-ink/10 pt-5 font-sans text-sm">
             <span>Total</span>
             <span>{formatPrice(subtotal)}</span>
           </div>
-          <button
-            type="submit"
-            className="mt-5 w-full bg-ink py-3 font-sans text-[11px] uppercase tracking-[0.2em] text-paper"
-          >
+          <button type="submit" className="btn-solid mt-8 w-full">
             Place order
           </button>
         </div>

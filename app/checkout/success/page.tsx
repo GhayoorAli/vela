@@ -15,21 +15,20 @@ function SuccessBody() {
   }, [clear]);
 
   return (
-    <main className="mx-auto max-w-xl px-6 py-24 text-center">
-      <p className="font-sans text-[11px] uppercase tracking-[0.22em] text-ink/45">Thank you</p>
-      <h1 className="mt-3 font-serif text-5xl">Order placed</h1>
+    <main className="mx-auto max-w-2xl px-6 py-28 text-center">
+      <p className="eyebrow">Thank you</p>
+      <h1 className="mt-4 font-serif text-6xl tracking-tight md:text-7xl">
+        Order placed
+      </h1>
       {order && (
-        <p className="mt-4 font-sans text-sm text-ink/65">
+        <p className="mt-6 font-sans text-sm text-ink/60">
           Reference <span className="text-ink">{order}</span>
         </p>
       )}
-      <p className="mt-4 font-sans text-sm leading-relaxed text-ink/60">
+      <p className="mx-auto mt-4 max-w-md font-sans text-sm font-light leading-relaxed text-ink/55">
         We’ll confirm by email. Pay cash on delivery or wait for transfer details.
       </p>
-      <Link
-        href="/shop"
-        className="mt-10 inline-block bg-ink px-6 py-3 font-sans text-[11px] uppercase tracking-[0.2em] text-paper"
-      >
+      <Link href="/shop" className="btn-solid mt-12">
         Continue shopping
       </Link>
     </main>

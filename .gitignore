@@ -44,5 +44,10 @@ Desktop.ini
 .vscode/
 *.iml
 
+# Serwist / PWA build output
+public/sw.js
+public/sw.js.map
+public/swe-worker*
+
 # Vercel
 .vercel
