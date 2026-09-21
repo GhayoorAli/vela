@@ -1,11 +1,7 @@
 # Dependencies
 node_modules/
 
-<<<<<<< HEAD
-# Local Mac toolchain (not for git)
-=======
 # Local Mac toolchain (Node binary — never commit)
->>>>>>> 7b91606 (Add project README and ignore local Node toolchain.)
 .tools/
 
 # Next.js
