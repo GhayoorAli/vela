@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vela
+      POSTGRES_PASSWORD: vela
+      POSTGRES_DB: vela
+    ports:
+      # Host 5433 so this does not clash with other local Postgres (often 5432).
+      - "5433:5432"
+    volumes:
+      - vela_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vela -d vela"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  vela_pg:

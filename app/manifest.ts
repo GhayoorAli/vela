@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Vela",
     short_name: "Vela",
     description:
-      "Clothing, eyewear, and living — try pieces on live with your camera before they arrive.",
+      "Hoodies, tees, trousers, and frames — try pieces on live with your camera before they arrive.",
     start_url: "/",
     scope: "/",
     display: "standalone",

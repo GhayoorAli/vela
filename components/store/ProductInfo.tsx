@@ -40,9 +40,10 @@ export function ProductInfo({ product }: { product: StoreProduct }) {
         {product.category.name}
         {product.tryOnLensId ? " · Live try-on" : ""}
       </p>
-      <h1 className="mt-3 font-serif text-4xl leading-[1.05] tracking-tight md:text-[3.25rem]">
+      <h1 className="mt-3 font-serif text-[2.35rem] leading-[1.05] tracking-tight sm:text-4xl md:text-[3.25rem]">
         {product.name}
       </h1>
+      <span className="mt-5 block h-px w-10 bg-rust" />
       <div className="mt-4 flex items-baseline gap-3">
         <p className="font-sans text-lg tracking-wide">{formatPrice(product.price)}</p>
         {sale && (

@@ -35,6 +35,26 @@ export type ProductFilters = {
   sort?: string;
 };
 
+export type RecommendMode = "product" | "cart" | "stylist";
+
+export type RecommendPick = {
+  slug: string;
+  name: string;
+  price: number;
+  compareAt: number | null;
+  image: string;
+  category: string;
+  tryOn: boolean;
+  reason: string;
+};
+
+export type RecommendResponse = {
+  source: "ai" | "atelier";
+  headline: string;
+  eyebrow: string;
+  picks: RecommendPick[];
+};
+
 /** Slim product payload handed to the client-side fitting room. */
 export type TryOnProduct = {
   id: string;

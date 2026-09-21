@@ -22,7 +22,7 @@ export function Marquee({
           >
             <span
               className={`mr-7 h-1 w-1 rounded-full ${
-                inverted ? "bg-paper/40" : "bg-ink/30"
+                inverted ? "bg-paper/40" : "bg-rust"
               }`}
             />
             {item}

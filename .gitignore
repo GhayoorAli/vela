@@ -1,6 +1,9 @@
 # Dependencies
 node_modules/
 
+# Local Mac toolchain (not for git)
+.tools/
+
 # Next.js
 .next/
 out/
@@ -12,7 +15,7 @@ next-env.d.ts.bak
 .env.*
 !.env.example
 
-# Prisma local SQLite
+# Local Prisma leftovers (SQLite files from earlier local setup)
 prisma/dev.db
 prisma/dev.db-journal
 prisma/*.db

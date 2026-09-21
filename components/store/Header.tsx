@@ -7,13 +7,13 @@ import { FormEvent, useEffect, useState } from "react";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { CartDrawer } from "@/components/store/CartDrawer";
-import { Marquee } from "@/components/store/Marquee";
 
 const NAV = [
   { href: "/shop", label: "Shop" },
-  { href: "/shop/clothing", label: "Clothing" },
-  { href: "/shop/eyewear", label: "Eyewear" },
-  { href: "/shop/furniture", label: "Living" },
+  { href: "/shop/hoodies", label: "Hoodies" },
+  { href: "/shop/tees", label: "Tees" },
+  { href: "/shop/trousers", label: "Trousers" },
+  { href: "/shop/eyewear", label: "Frames" },
   { href: "/try-on", label: "Try on" },
 ];
 
@@ -54,23 +54,11 @@ export function Header() {
 
   return (
     <>
-      <div className="hide-standalone">
-        <Marquee
-          inverted
-          items={[
-            "Cash on delivery",
-            "30-day returns",
-            "Live camera try-on",
-            "Complimentary alterations advice",
-            "Ships nationwide",
-          ]}
-        />
-      </div>
       <header
-        className={`app-header sticky top-0 z-40 transition-all duration-500 ease-expo ${
+        className={`app-header sticky top-0 z-40 transition-all duration-700 ease-expo ${
           transparent
             ? "border-b border-transparent bg-transparent text-paper"
-            : "border-b border-ink/10 bg-paper/90 text-ink backdrop-blur-xl"
+            : "border-b border-ink/10 bg-paper/80 text-ink backdrop-blur-2xl"
         }`}
       >
         <div className="mx-auto grid h-[4.5rem] max-w-frame grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 md:h-20 md:px-8">
@@ -83,7 +71,7 @@ export function Header() {
             >
               <Menu size={18} strokeWidth={1.5} />
             </button>
-            <nav className="hidden items-center gap-7 lg:flex">
+            <nav className="hidden items-center gap-5 lg:flex">
               {NAV.map((item) => {
                 const active =
                   item.href === "/shop"
@@ -107,7 +95,7 @@ export function Header() {
 
           <Link
             href="/"
-            className="font-serif text-[34px] leading-none tracking-tight md:text-[40px]"
+            className="font-serif text-[32px] leading-none tracking-tight transition duration-500 ease-expo hover:italic md:text-[38px]"
           >
             Vela
           </Link>
@@ -157,7 +145,7 @@ export function Header() {
               autoFocus
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search garments, rooms, frames…"
+              placeholder="Search hoodies, tees, frames…"
               className="w-full bg-transparent font-sans text-sm outline-none placeholder:opacity-40"
             />
             <button
@@ -184,7 +172,7 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="font-serif text-5xl leading-[1.05]"
+                className="font-serif text-4xl leading-[1.05] animate-fade-up sm:text-5xl"
                 style={{ animationDelay: `${i * 60}ms` }}
               >
                 {item.label}

@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ProductCard } from "@/components/store/ProductCard";
 import { ProductGallery } from "@/components/store/ProductGallery";
 import { ProductInfo } from "@/components/store/ProductInfo";
-import { getProductBySlug, relatedProducts } from "@/lib/catalog";
+import { RecommendedRow } from "@/components/store/RecommendedRow";
+import { getProductBySlug } from "@/lib/catalog";
 
 export async function generateMetadata({
   params,
@@ -23,39 +23,46 @@ export default async function ProductPage({
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) notFound();
-  const related = await relatedProducts(product);
 
   return (
-    <main className="mx-auto max-w-frame px-4 py-8 md:px-8">
-      <nav className="font-sans text-[10px] uppercase tracking-[0.2em] text-ink/40">
-        <Link href="/shop" className="hover:text-ink">
-          Shop
-        </Link>
-        <span className="mx-2">/</span>
-        <Link href={`/shop/${product.category.slug}`} className="hover:text-ink">
-          {product.category.name}
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-ink">{product.name}</span>
-      </nav>
+    <main>
+      <div className="mx-auto max-w-frame px-5 pb-6 pt-6 md:px-8 md:pt-10">
+        <nav className="overflow-hidden font-sans text-[10px] uppercase tracking-[0.2em] text-ink/40">
+          <Link href="/shop" className="hover:text-ink">
+            Shop
+          </Link>
+          <span className="mx-2">/</span>
+          <Link href={`/shop/${product.category.slug}`} className="hover:text-ink">
+            {product.category.name}
+          </Link>
+          <span className="mx-2">/</span>
+          <span className="text-ink">{product.name}</span>
+        </nav>
 
-      <div className="mt-8 grid items-start gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
-        <ProductGallery images={product.images} name={product.name} />
-        <div className="lg:sticky lg:top-28 lg:self-start lg:pt-4">
-          <ProductInfo product={product} />
+        <div className="mt-8 grid items-start gap-10 lg:grid-cols-12 lg:gap-x-14 xl:gap-x-20">
+          <div className="lg:col-span-5 xl:col-span-5">
+            <ProductGallery images={product.images} name={product.name} />
+          </div>
+          <div className="lg:sticky lg:top-28 lg:col-span-7 lg:max-w-xl lg:pt-2 xl:col-span-6">
+            <ProductInfo product={product} />
+          </div>
         </div>
       </div>
 
-      <section className="mt-24 border-t border-ink/10 pt-14">
+      <section className="mx-auto max-w-frame border-t border-ink/10 px-5 py-16 md:px-8 md:py-20">
         <p className="eyebrow">The piece</p>
-        <h2 className="mt-2 font-serif text-4xl tracking-tight">Details</h2>
+        <h2 className="mt-2 font-serif text-4xl tracking-tight md:text-5xl">Details</h2>
         <dl className="mt-10 grid gap-10 sm:grid-cols-3">
           <div>
-            <dt className="font-sans text-[10px] uppercase tracking-[0.22em] text-ink/35">01 — Fabric</dt>
+            <dt className="font-sans text-[10px] uppercase tracking-[0.22em] text-ink/35">
+              01 — Fabric
+            </dt>
             <dd className="mt-3 font-sans text-sm leading-relaxed">{product.fabric}</dd>
           </div>
           <div>
-            <dt className="font-sans text-[10px] uppercase tracking-[0.22em] text-ink/35">02 — Fit</dt>
+            <dt className="font-sans text-[10px] uppercase tracking-[0.22em] text-ink/35">
+              02 — Fit
+            </dt>
             <dd className="mt-3 font-sans text-sm leading-relaxed">
               {product.tryOnLensId ? (
                 <Link
@@ -70,7 +77,9 @@ export default async function ProductPage({
             </dd>
           </div>
           <div>
-            <dt className="font-sans text-[10px] uppercase tracking-[0.22em] text-ink/35">03 — Delivery</dt>
+            <dt className="font-sans text-[10px] uppercase tracking-[0.22em] text-ink/35">
+              03 — Delivery
+            </dt>
             <dd className="mt-3 font-sans text-sm leading-relaxed">
               Cash on delivery or bank transfer. Dispatched from the atelier.
             </dd>
@@ -78,20 +87,9 @@ export default async function ProductPage({
         </dl>
       </section>
 
-      {related.length > 0 && (
-        <section className="mt-24">
-          <div className="mb-10 flex items-end justify-between">
-            <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
-              You may also like
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-12 md:grid-cols-4 md:gap-x-6">
-            {related.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
-        </section>
-      )}
+      <div className="mx-auto max-w-frame px-5 pb-8 md:px-8">
+        <RecommendedRow mode="product" productSlug={product.slug} />
+      </div>
     </main>
   );
 }
