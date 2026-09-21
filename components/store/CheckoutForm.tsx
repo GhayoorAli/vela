@@ -84,7 +84,8 @@ export function CheckoutForm() {
       </div>
 
       <aside className="lg:col-span-5">
-        <div className="sticky top-28 bg-mist p-8">
+        <div className="sticky top-28 isolate z-20 bg-paper">
+        <div className="bg-mist p-8">
           <p className="eyebrow">Your order</p>
           <h2 className="mt-2 font-serif text-3xl tracking-tight">Summary</h2>
           <ul className="mt-6 space-y-4">
@@ -110,6 +111,7 @@ export function CheckoutForm() {
           <button type="submit" className="btn-solid mt-8 w-full">
             Place order
           </button>
+        </div>
         </div>
       </aside>
     </form>

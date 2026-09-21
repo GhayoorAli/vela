@@ -1,5 +1,6 @@
 import type { Category, Product as DbProduct } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { CATEGORY_IMAGES, PRODUCT_IMAGES, sortCategories } from "@/lib/media";
 import type {
   ProductColor,
   ProductFilters,
@@ -22,7 +23,7 @@ export function hydrateProduct(row: ProductRow): StoreProduct {
     fabric: row.fabric,
     tryOnLensId: row.tryOnLensId?.trim() || null,
     tryOnLensGroupId: row.tryOnLensGroupId?.trim() || null,
-    images: JSON.parse(row.images) as string[],
+    images: PRODUCT_IMAGES[row.slug] ?? (JSON.parse(row.images) as string[]),
     colors: JSON.parse(row.colors) as ProductColor[],
     sizes: JSON.parse(row.sizes) as string[],
     featured: row.featured,
@@ -35,11 +36,19 @@ export function hydrateProduct(row: ProductRow): StoreProduct {
 }
 
 export async function listCategories() {
-  return prisma.category.findMany({ orderBy: { name: "asc" } });
+  const rows = await prisma.category.findMany({ orderBy: { name: "asc" } });
+  return sortCategories(
+    rows.map((c) => ({
+      ...c,
+      image: CATEGORY_IMAGES[c.slug] ?? c.image,
+    })),
+  );
 }
 
 export async function getCategory(slug: string) {
-  return prisma.category.findUnique({ where: { slug } });
+  const row = await prisma.category.findUnique({ where: { slug } });
+  if (!row) return null;
+  return { ...row, image: CATEGORY_IMAGES[row.slug] ?? row.image };
 }
 
 export async function getProductBySlug(slug: string) {
@@ -121,6 +130,22 @@ export async function relatedProducts(product: StoreProduct, take = 4) {
     take,
   });
   return rows.map(hydrateProduct);
+}
+
+export function toRecommendPick(
+  product: StoreProduct,
+  reason: string,
+): import("@/lib/types").RecommendPick {
+  return {
+    slug: product.slug,
+    name: product.name,
+    price: product.price,
+    compareAt: product.compareAt,
+    image: product.images[0] ?? "",
+    category: product.category.name,
+    tryOn: Boolean(product.tryOnLensId),
+    reason,
+  };
 }
 
 /** Every product that has a try-on lens attached, featured first. */

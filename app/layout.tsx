@@ -18,7 +18,7 @@ const sans = Plus_Jakarta_Sans({
 
 const APP_NAME = "Vela";
 const APP_DESCRIPTION =
-  "An editorial house for clothing, eyewear, and living — try the clothes on live with your camera before they arrive.";
+  "Hoodies, tees, trousers, and frames — try the clothes on live with your camera before they arrive.";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
