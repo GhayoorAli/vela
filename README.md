@@ -1,9 +1,3 @@
-## Hook
-
-See the hoodie on you before it ships — Vela is a fashion store with a live camera fitting room, not another grid of flat photos.
-
----
-
 ## The problem
 
 Most fashion sites still ask you to buy from flat photos and hope the fit works when the box arrives. Try-on is either missing, stuck in a native app, or bolted on as a gimmick. I built Vela as a fashion house for hoodies, tees, trousers, and frames — with a live camera fitting room, cash-on-delivery checkout, AI styling hints, and a phone-installable PWA — so you see the piece on you before you order.
