@@ -1,9 +1,3 @@
-## The problem
-
-Most fashion sites still ask you to buy from flat photos and hope the fit works when the box arrives. Try-on is either missing, stuck in a native app, or bolted on as a gimmick. I built Vela as a fashion house for hoodies, tees, trousers, and frames — with a live camera fitting room, cash-on-delivery checkout, AI styling hints, and a phone-installable PWA — so you see the piece on you before you order.
-
----
-
 ## My role
 
 Solo full-stack developer. I designed and built the product end to end: Next.js storefront and admin, Prisma / PostgreSQL catalog and orders, Snap Camera Kit try-on, Serwist PWA, OpenAI-backed recommendations with a catalog fallback, Docker local Postgres, and production deploy on Vercel + Neon.
