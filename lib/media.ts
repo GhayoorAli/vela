@@ -1,4 +1,4 @@
-/** Studio packshots stored in /public/products — front-facing, sand backdrop. */
+/** Studio model packshots in /public/products — front-facing, sand backdrop, visible face for AR. */
 export function shot(file: string) {
   return `/products/${file}`;
 }
