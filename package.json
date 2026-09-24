@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "postinstall": "prisma generate",
-    "build": "prisma generate && prisma db push && next build",
+    "build": "prisma generate && node -e \"const u=process.env.DIRECT_URL?.trim(); if(u){ require('child_process').execSync('npx prisma db push',{stdio:'inherit'}) } else { console.log('Skipping prisma db push (DIRECT_URL unset)') }\" && next build",
     "start": "next start",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
