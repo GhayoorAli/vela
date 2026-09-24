@@ -18,7 +18,7 @@ const cache = new Map<string, { at: number; value: RecommendResponse }>();
 
 function cacheKey(input: RecommendInput) {
   return JSON.stringify({
-    v: 3,
+    v: 4,
     mode: input.mode,
     productSlug: input.productSlug ?? "",
     cartSlugs: [...(input.cartSlugs ?? [])].sort(),
@@ -188,6 +188,7 @@ async function fromOpenAI(
   const timer = setTimeout(() => controller.abort(), 12_000);
 
   try {
+    const model = process.env.OPENAI_MODEL?.trim() || "gpt-6-luna";
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       signal: controller.signal,
@@ -196,7 +197,9 @@ async function fromOpenAI(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: process.env.OPENAI_MODEL?.trim() || "gpt-4o-mini",
+        model,
+        // gpt-6-luna / Sol: keep Chat Completions JSON stable without reasoning tokens
+        reasoning_effort: "none",
         temperature: 0.4,
         response_format: { type: "json_object" },
         messages: [
@@ -212,7 +215,13 @@ async function fromOpenAI(
         ],
       }),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      if (process.env.NODE_ENV !== "production") {
+        const detail = await res.text().catch(() => "");
+        console.warn("[recommend] OpenAI", res.status, detail.slice(0, 400));
+      }
+      return null;
+    }
     const data = (await res.json()) as {
       choices?: { message?: { content?: string } }[];
     };
