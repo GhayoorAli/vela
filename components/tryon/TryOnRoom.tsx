@@ -70,72 +70,66 @@ function isMobileClient() {
   return window.matchMedia("(max-width: 900px) and (pointer: coarse)").matches;
 }
 
-type RenderBudget = {
-  fps: number;
-  /** Canvas drawing-buffer size (Camera Kit writes into this). */
-  canvasW: number;
-  canvasH: number;
-};
-
-/** Mobile gets a tiny buffer + low FPS — Garment Transfer is SnapML-heavy on web. */
-function renderBudget(): RenderBudget {
-  if (isMobileClient()) {
-    return { fps: 12, canvasW: 480, canvasH: 360 };
-  }
-  return { fps: 30, canvasW: 960, canvasH: 540 };
-}
-
 /**
- * Snap: request standard *landscape* ideals (never window/portrait pixel sizes).
- * Phones orient the buffer themselves.
+ * Garment Transfer is SnapML. On phones it freezes when the camera track is
+ * 1080p/4K — each frame takes longer than the display interval, so the canvas
+ * looks stuck. Cap the *input* (Camera Kit renders at input size). Do not call
+ * setRenderSize on mobile: Snap says that disables their portrait auto-fix.
  */
-function cameraConstraints(facing: Facing, budget: RenderBudget): MediaStreamConstraints {
-  return {
-    audio: false,
-    video: {
-      facingMode: facing === "user" ? "user" : { ideal: "environment" },
-      width: { ideal: budget.canvasW },
-      height: { ideal: budget.canvasH },
-      frameRate: { ideal: budget.fps, max: budget.fps + 6 },
+function cameraAttempts(facing: Facing): MediaStreamConstraints[] {
+  const facingMode = facing === "user" ? "user" : { ideal: "environment" as const };
+  if (isMobileClient()) {
+    return [
+      {
+        audio: false,
+        video: {
+          facingMode,
+          width: { ideal: 640, max: 640 },
+          height: { ideal: 480, max: 480 },
+          frameRate: { ideal: 24, max: 30 },
+        },
+      },
+      {
+        audio: false,
+        video: {
+          facingMode,
+          width: { ideal: 640, max: 960 },
+          height: { ideal: 480, max: 540 },
+          frameRate: { ideal: 24, max: 30 },
+        },
+      },
+      {
+        audio: false,
+        video: {
+          facingMode,
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+        },
+      },
+    ];
+  }
+  return [
+    {
+      audio: false,
+      video: {
+        facingMode,
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+        frameRate: { ideal: 30, max: 30 },
+      },
     },
-  };
+    {
+      audio: false,
+      video: { facingMode },
+    },
+  ];
 }
 
 async function openCamera(facing: Facing) {
-  const budget = renderBudget();
-  const attempts: MediaStreamConstraints[] = [
-    cameraConstraints(facing, budget),
-    // iOS often rejects frameRate
-    {
-      audio: false,
-      video: {
-        facingMode: facing === "user" ? "user" : { ideal: "environment" },
-        width: { ideal: budget.canvasW },
-        height: { ideal: budget.canvasH },
-      },
-    },
-    {
-      audio: false,
-      video: {
-        facingMode: facing === "user" ? "user" : { ideal: "environment" },
-      },
-    },
-  ];
-
   let lastErr: unknown;
-  for (const constraints of attempts) {
+  for (const constraints of cameraAttempts(facing)) {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      const track = stream.getVideoTracks()[0];
-      if (track) {
-        try {
-          // Prefer throughput over still-image sharpness when the UA supports it.
-          (track as MediaStreamTrack & { contentHint?: string }).contentHint = "motion";
-        } catch {
-          /* ignore */
-        }
-      }
-      return stream;
+      return await navigator.mediaDevices.getUserMedia(constraints);
     } catch (err) {
       lastErr = err;
     }
@@ -143,25 +137,8 @@ async function openCamera(facing: Facing) {
   throw lastErr instanceof Error ? lastErr : new Error("Could not open the camera.");
 }
 
-/**
- * Pin the canvas *bitmap* to our budget. CSS still scales it full-screen —
- * that scaling is cheap; rendering full retina buffers is what freezes phones.
- */
-function pinCanvasBuffer(canvas: HTMLCanvasElement, budget: RenderBudget) {
-  if (canvas.width !== budget.canvasW) canvas.width = budget.canvasW;
-  if (canvas.height !== budget.canvasH) canvas.height = budget.canvasH;
-}
-
-/** Force Camera Kit's render resolution to match the pinned canvas buffer. */
-async function syncRenderSize(
-  source: { setRenderSize: (w: number, h: number) => Promise<void> },
-  budget: RenderBudget,
-) {
-  // Wait on mobile — track/orientation settle; then lock to the small buffer.
-  if (isMobileClient()) {
-    await new Promise((r) => window.setTimeout(r, 300));
-  }
-  await source.setRenderSize(budget.canvasW, budget.canvasH);
+function fpsLimit() {
+  return isMobileClient() ? 24 : 30;
 }
 
 function stopStream(stream: MediaStream | null) {
@@ -212,20 +189,12 @@ export function TryOnRoom({
   const router = useRouter();
   const { addItem, count } = useCart();
 
-  // Phones: one garment at a time. Carousel + Garment Transfer thrash the GPU.
-  const roomProducts = useMemo(() => {
-    if (typeof window === "undefined" || !isMobileClient()) return products;
-    if (!initialSlug) return products.slice(0, 1);
-    const hit = products.find((p) => p.slug === initialSlug);
-    return hit ? [hit] : products.slice(0, 1);
-  }, [products, initialSlug]);
-
   const startIndex = Math.max(
     0,
-    roomProducts.findIndex((p) => p.slug === initialSlug),
+    products.findIndex((p) => p.slug === initialSlug),
   );
   const [index, setIndex] = useState(startIndex);
-  const active = roomProducts[index] ?? roomProducts[0];
+  const active = products[index] ?? products[0];
 
   const [phase, setPhase] = useState<Phase>("intro");
   const [step, setStep] = useState("");
@@ -241,11 +210,8 @@ export function TryOnRoom({
   );
   const [color, setColor] = useState(active?.colors[0]);
   const [added, setAdded] = useState(false);
-  /** Mobile shows a native <video> until AR is ready — Canvas Kit freezes if started hidden. */
-  const [feed, setFeed] = useState<"native" | "ar">("ar");
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const kitRef = useRef<CameraKit | null>(null);
   const sessionRef = useRef<CameraKitSession | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -258,29 +224,6 @@ export function TryOnRoom({
   const showToast = useCallback((msg: string) => {
     setToast(msg);
     window.setTimeout(() => setToast(null), 2600);
-  }, []);
-
-  const attachNativePreview = useCallback(async (stream: MediaStream, facing: Facing) => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.srcObject = stream;
-    video.muted = true;
-    video.playsInline = true;
-    video.setAttribute("playsinline", "true");
-    video.setAttribute("webkit-playsinline", "true");
-    video.style.transform = facing === "user" ? "scaleX(-1)" : "none";
-    try {
-      await video.play();
-    } catch {
-      /* autoplay quirks — playsInline + muted usually ok */
-    }
-  }, []);
-
-  const clearNativePreview = useCallback(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.pause();
-    video.srcObject = null;
   }, []);
 
   /* --------------------------------------------------------------------- */
@@ -328,7 +271,7 @@ export function TryOnRoom({
     const kit = kitRef.current;
     if (!kit) return;
     try {
-      const targets = roomProducts.filter((p) => p.lensId !== active?.lensId);
+      const targets = products.filter((p) => p.lensId !== active?.lensId);
       const lenses: Lens[] = [];
       for (const p of targets) {
         try {
@@ -341,7 +284,7 @@ export function TryOnRoom({
     } catch {
       /* best-effort */
     }
-  }, [roomProducts, active?.lensId, loadLens]);
+  }, [products, active?.lensId, loadLens]);
 
   /* --------------------------------------------------------------------- */
   /* Session lifecycle                                                      */
@@ -351,7 +294,6 @@ export function TryOnRoom({
     runRef.current += 1;
     const session = sessionRef.current;
     sessionRef.current = null;
-    clearNativePreview();
     stopStream(streamRef.current);
     streamRef.current = null;
     if (session) {
@@ -362,7 +304,7 @@ export function TryOnRoom({
         /* already gone */
       }
     }
-  }, [clearNativePreview]);
+  }, []);
 
   const start = useCallback(async () => {
     if (!active) return;
@@ -401,18 +343,7 @@ export function TryOnRoom({
     }
     streamRef.current = stream;
 
-    const mobile = isMobileClient();
-
     try {
-      // Phones: show native camera IMMEDIATELY. Camera Kit WebGL often freezes
-      // if play() starts while the canvas is covered/hidden (opacity-0 overlay).
-      if (mobile) {
-        await attachNativePreview(stream, facingRef.current);
-        setFeed("native");
-        setPhase("live");
-        setStep("Preparing AR…");
-      }
-
       navigator.mediaDevices
         .enumerateDevices()
         .then((list) =>
@@ -420,29 +351,13 @@ export function TryOnRoom({
         )
         .catch(() => setCanFlip(false));
 
-      if (!mobile) setStep("Loading AR engine…");
+      setStep("Loading AR engine…");
       const { sdk, kit } = await getCameraKit(apiToken);
       if (run !== runRef.current) return;
       kitRef.current = kit;
 
       const canvas = canvasRef.current;
       if (!canvas) throw new Error("Render surface missing.");
-      const budget = renderBudget();
-      pinCanvasBuffer(canvas, budget);
-
-      // Prefetch the lens while the native preview is still rolling.
-      let readyLens: Lens | null = null;
-      if (mobile && active) {
-        try {
-          readyLens = await loadLens(active);
-        } catch (err) {
-          brokenLenses.current.add(active.lensId);
-          showToast(describeLensError(err));
-        }
-      }
-
-      if (run !== runRef.current) return;
-
       const session = await kit.createSession({ liveRenderTarget: canvas });
       if (run !== runRef.current) {
         await session.destroy();
@@ -461,6 +376,7 @@ export function TryOnRoom({
         }
       });
 
+      const limit = fpsLimit();
       const source = sdk.createMediaStreamSource(stream, {
         cameraType: facingRef.current,
         transform:
@@ -468,49 +384,25 @@ export function TryOnRoom({
             ? sdk.Transform2D.MirrorX
             : sdk.Transform2D.Identity,
         disableSourceAudio: true,
-        fpsLimit: budget.fps,
+        fpsLimit: limit,
       });
       await session.setSource(source);
-      await session.setFPSLimit(budget.fps);
+      await session.setFPSLimit(limit);
 
-      // Reveal WebGL canvas, then play — never call play() while opacity-0.
-      if (mobile) {
-        setFeed("ar");
-        setFitting(true);
-        await new Promise((r) => requestAnimationFrame(() => r(undefined)));
-        clearNativePreview();
-      } else {
-        setPhase("live");
-        setFeed("ar");
-      }
+      // Drop the intro cover before play(). iOS freezes WebGL if play starts
+      // while the canvas is hidden under an opaque overlay.
+      setPhase("live");
+      await new Promise((r) => requestAnimationFrame(() => r(undefined)));
+      if (run !== runRef.current) return;
 
       await session.play("live");
-      if (!mobile) {
-        try {
-          await syncRenderSize(source, budget);
-        } catch {
-          /* best-effort */
-        }
-      }
       if (run !== runRef.current) return;
 
       setStep(`Fitting ${active.name}…`);
-      if (mobile && readyLens) {
-        const seq = ++applySeq.current;
-        try {
-          await session.applyLens(readyLens);
-        } catch (err) {
-          brokenLenses.current.add(active.lensId);
-          showToast(describeLensError(err));
-        } finally {
-          if (seq === applySeq.current) setFitting(false);
-        }
-      } else {
-        await wear(active);
-      }
+      await wear(active);
       if (run !== runRef.current) return;
 
-      if (!mobile) {
+      if (!isMobileClient()) {
         window.setTimeout(() => {
           if (run === runRef.current) void prefetch();
         }, 800);
@@ -519,7 +411,6 @@ export function TryOnRoom({
       if (run !== runRef.current) return;
       const name = err instanceof Error ? err.name : "";
       setPhase("error");
-      setFeed("ar");
       setError(
         name === "BootstrapError"
           ? "The AR engine could not start. Check the Camera Kit API token and your network, then retry."
@@ -529,20 +420,10 @@ export function TryOnRoom({
               ? err.message
               : "Something went wrong while starting the fitting room.",
       );
-      clearNativePreview();
       stopStream(streamRef.current);
       streamRef.current = null;
     }
-  }, [
-    active,
-    apiToken,
-    attachNativePreview,
-    clearNativePreview,
-    loadLens,
-    prefetch,
-    showToast,
-    wear,
-  ]);
+  }, [active, apiToken, prefetch, showToast, wear]);
 
   const flip = useCallback(async () => {
     const session = sessionRef.current;
@@ -556,32 +437,20 @@ export function TryOnRoom({
       streamRef.current = stream;
       facingRef.current = next;
       setFacing(next);
-      if (feed === "native") {
-        await attachNativePreview(stream, next);
-      }
-      const budget = renderBudget();
-      const canvas = canvasRef.current;
-      if (canvas) pinCanvasBuffer(canvas, budget);
+      const limit = fpsLimit();
       const source = sdk.createMediaStreamSource(stream, {
         cameraType: next,
         transform:
           next === "user" ? sdk.Transform2D.MirrorX : sdk.Transform2D.Identity,
         disableSourceAudio: true,
-        fpsLimit: budget.fps,
+        fpsLimit: limit,
       });
       await session.setSource(source);
-      await session.setFPSLimit(budget.fps);
-      if (!isMobileClient()) {
-        try {
-          await syncRenderSize(source, budget);
-        } catch {
-          /* ignore */
-        }
-      }
+      await session.setFPSLimit(limit);
     } catch {
       showToast("Couldn't switch cameras.");
     }
-  }, [apiToken, attachNativePreview, feed, fitting, showToast]);
+  }, [apiToken, fitting, showToast]);
 
   const capture = useCallback(async () => {
     const session = sessionRef.current;
@@ -604,7 +473,7 @@ export function TryOnRoom({
   /* Change garment */
   const select = useCallback(
     (i: number) => {
-      const product = roomProducts[i];
+      const product = products[i];
       if (!product || i === index) return;
       setIndex(i);
       setSize(product.sizes[Math.floor(product.sizes.length / 2)] ?? "");
@@ -612,7 +481,7 @@ export function TryOnRoom({
       setSizeOpen(false);
       if (phase === "live") void wear(product);
     },
-    [index, phase, roomProducts, wear],
+    [index, phase, products, wear],
   );
 
   /* Add the active piece to the bag */
@@ -695,26 +564,10 @@ export function TryOnRoom({
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-black text-white">
-      {/* Native camera — phones only, until AR canvas is ready. Never opacity-0 the WebGL canvas while playing. */}
-      <video
-        ref={videoRef}
-        muted
-        playsInline
-        autoPlay
-        className={`absolute inset-0 h-full w-full object-cover ${
-          feed === "native" && phase === "live"
-            ? "z-[1] opacity-100"
-            : "pointer-events-none z-0 opacity-0"
-        }`}
-      />
       <canvas
         ref={canvasRef}
-        width={480}
-        height={360}
         data-tryon-phase={phase}
-        className={`absolute inset-0 h-full w-full object-cover opacity-100 ${
-          feed === "ar" ? "z-[1]" : "z-0"
-        }`}
+        className="absolute inset-0 h-full w-full object-cover"
       />
 
       {/* Top chrome */}
@@ -755,18 +608,17 @@ export function TryOnRoom({
       </div>
 
       {/* Fitting / preparing indicator */}
-      {phase === "live" && (fitting || feed === "native") && (
+      {phase === "live" && fitting && (
         <div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 flex -translate-y-1/2 justify-center">
           <div className="flex items-center gap-2 rounded-full bg-black/55 px-4 py-2 font-sans text-xs uppercase tracking-[0.18em] backdrop-blur">
-            <Loader2 size={14} className="animate-spin" />{" "}
-            {feed === "native" ? "Preparing AR…" : "Fitting…"}
+            <Loader2 size={14} className="animate-spin" /> Fitting…
           </div>
         </div>
       )}
-      {phase === "live" && !fitting && feed === "ar" && activeBroken && (
+      {phase === "live" && !fitting && activeBroken && (
         <div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 flex -translate-y-1/2 justify-center px-6">
           <div className="max-w-xs rounded-2xl bg-black/60 px-5 py-4 text-center font-sans text-sm backdrop-blur">
-            {roomProducts.length > 1
+            {products.length > 1
               ? "This piece couldn't be loaded. Pick another one below."
               : "This piece couldn't be loaded right now."}
           </div>
@@ -776,9 +628,9 @@ export function TryOnRoom({
       {/* Bottom chrome */}
       {phase === "live" && (
         <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/75 via-black/40 to-transparent px-3 pb-[max(1rem,env(safe-area-inset-bottom))] pt-16">
-          {roomProducts.length > 1 && (
+          {products.length > 1 && (
             <div className="no-scrollbar mb-4 flex gap-2 overflow-x-auto px-1 pb-1">
-              {roomProducts.map((p, i) => (
+              {products.map((p, i) => (
                 <button
                   key={p.id}
                   type="button"
