@@ -23,6 +23,13 @@ import {
 } from "react";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
+import {
+  isFrozenLens,
+  mobileFpsLimit,
+  mobileRenderSize,
+  nextLowerTier,
+  type RenderTier,
+} from "@/lib/tryon-render";
 import type { TryOnProduct } from "@/lib/types";
 
 /* ------------------------------------------------------------------------ */
@@ -71,10 +78,8 @@ function isMobileClient() {
 }
 
 /**
- * Garment Transfer is SnapML. On phones it freezes when the camera track is
- * 1080p/4K — each frame takes longer than the display interval, so the canvas
- * looks stuck. Cap the *input* (Camera Kit renders at input size). Do not call
- * setRenderSize on mobile: Snap says that disables their portrait auto-fix.
+ * Ask for a small camera. Phones often ignore `max` and still deliver 1080p —
+ * that is why we always call setRenderSize after play() on mobile.
  */
 function cameraAttempts(facing: Facing): MediaStreamConstraints[] {
   const facingMode = facing === "user" ? "user" : { ideal: "environment" as const };
@@ -93,19 +98,11 @@ function cameraAttempts(facing: Facing): MediaStreamConstraints[] {
         audio: false,
         video: {
           facingMode,
-          width: { ideal: 640, max: 960 },
-          height: { ideal: 480, max: 540 },
-          frameRate: { ideal: 24, max: 30 },
-        },
-      },
-      {
-        audio: false,
-        video: {
-          facingMode,
           width: { ideal: 640 },
           height: { ideal: 480 },
         },
       },
+      { audio: false, video: { facingMode } },
     ];
   }
   return [
@@ -118,10 +115,7 @@ function cameraAttempts(facing: Facing): MediaStreamConstraints[] {
         frameRate: { ideal: 30, max: 30 },
       },
     },
-    {
-      audio: false,
-      video: { facingMode },
-    },
+    { audio: false, video: { facingMode } },
   ];
 }
 
@@ -137,8 +131,23 @@ async function openCamera(facing: Facing) {
   throw lastErr instanceof Error ? lastErr : new Error("Could not open the camera.");
 }
 
-function fpsLimit() {
-  return isMobileClient() ? 24 : 30;
+type RenderSource = {
+  setRenderSize: (width: number, height: number) => Promise<void>;
+};
+
+/**
+ * Cap Camera Kit's *render* buffer. Must run after session.play().
+ * Start phones on "low" so Garment Transfer never sees a 1080p buffer.
+ */
+async function applyRenderBudget(
+  session: CameraKitSession,
+  source: RenderSource,
+  tier: RenderTier,
+) {
+  const { width, height } = mobileRenderSize(tier);
+  const fps = mobileFpsLimit(tier);
+  await session.setFPSLimit(fps);
+  await source.setRenderSize(width, height);
 }
 
 function stopStream(stream: MediaStream | null) {
@@ -214,7 +223,10 @@ export function TryOnRoom({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const kitRef = useRef<CameraKit | null>(null);
   const sessionRef = useRef<CameraKitSession | null>(null);
+  const sourceRef = useRef<RenderSource | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const tierRef = useRef<RenderTier>("low");
+  const measureTimerRef = useRef<number | null>(null);
   const lensCache = useRef(new Map<string, Lens>());
   const brokenLenses = useRef(new Set<string>());
   const runRef = useRef(0);
@@ -225,6 +237,52 @@ export function TryOnRoom({
     setToast(msg);
     window.setTimeout(() => setToast(null), 2600);
   }, []);
+
+  const clearMeasureTimer = useCallback(() => {
+    if (measureTimerRef.current != null) {
+      window.clearInterval(measureTimerRef.current);
+      measureTimerRef.current = null;
+    }
+  }, []);
+
+  /** If SnapML is still too heavy after apply, drop render tier once or twice. */
+  const watchPerformance = useCallback(
+    (session: CameraKitSession) => {
+      clearMeasureTimer();
+      if (!isMobileClient()) return;
+      const measurement = session.metrics.beginMeasurement();
+      let checks = 0;
+      measureTimerRef.current = window.setInterval(() => {
+        checks += 1;
+        const stats = measurement.measure();
+        if (!isFrozenLens(stats)) {
+          if (checks >= 6) {
+            measurement.end();
+            clearMeasureTimer();
+          }
+          return;
+        }
+        const next = nextLowerTier(tierRef.current);
+        const source = sourceRef.current;
+        if (!next || !source) {
+          measurement.end();
+          clearMeasureTimer();
+          return;
+        }
+        tierRef.current = next;
+        void applyRenderBudget(session, source, next)
+          .then(() => measurement.reset())
+          .catch(() => {
+            /* keep running at current tier */
+          });
+        if (next === "safe") {
+          measurement.end();
+          clearMeasureTimer();
+        }
+      }, 900);
+    },
+    [clearMeasureTimer],
+  );
 
   /* --------------------------------------------------------------------- */
   /* Lens application                                                       */
@@ -292,8 +350,10 @@ export function TryOnRoom({
 
   const teardown = useCallback(async () => {
     runRef.current += 1;
+    clearMeasureTimer();
     const session = sessionRef.current;
     sessionRef.current = null;
+    sourceRef.current = null;
     stopStream(streamRef.current);
     streamRef.current = null;
     if (session) {
@@ -304,7 +364,7 @@ export function TryOnRoom({
         /* already gone */
       }
     }
-  }, []);
+  }, [clearMeasureTimer]);
 
   const start = useCallback(async () => {
     if (!active) return;
@@ -376,7 +436,12 @@ export function TryOnRoom({
         }
       });
 
-      const limit = fpsLimit();
+      const mobile = isMobileClient();
+      // Garment Transfer: start phones on "low" so applyLens never sees 1080p.
+      const tier: RenderTier = mobile ? "low" : "normal";
+      tierRef.current = tier;
+      const limit = mobile ? mobileFpsLimit(tier) : 30;
+
       const source = sdk.createMediaStreamSource(stream, {
         cameraType: facingRef.current,
         transform:
@@ -386,6 +451,7 @@ export function TryOnRoom({
         disableSourceAudio: true,
         fpsLimit: limit,
       });
+      sourceRef.current = source;
       await session.setSource(source);
       await session.setFPSLimit(limit);
 
@@ -398,11 +464,24 @@ export function TryOnRoom({
       await session.play("live");
       if (run !== runRef.current) return;
 
+      if (mobile) {
+        try {
+          await applyRenderBudget(session, source, tier);
+        } catch {
+          /* continue — better a soft lens than a hard crash */
+        }
+        // Let a couple of uncapped frames settle at the new size before SnapML.
+        await new Promise((r) => window.setTimeout(r, 120));
+      }
+      if (run !== runRef.current) return;
+
       setStep(`Fitting ${active.name}…`);
       await wear(active);
       if (run !== runRef.current) return;
 
-      if (!isMobileClient()) {
+      if (mobile) watchPerformance(session);
+
+      if (!mobile) {
         window.setTimeout(() => {
           if (run === runRef.current) void prefetch();
         }, 800);
@@ -422,8 +501,9 @@ export function TryOnRoom({
       );
       stopStream(streamRef.current);
       streamRef.current = null;
+      sourceRef.current = null;
     }
-  }, [active, apiToken, prefetch, showToast, wear]);
+  }, [active, apiToken, prefetch, showToast, watchPerformance, wear]);
 
   const flip = useCallback(async () => {
     const session = sessionRef.current;
@@ -437,7 +517,9 @@ export function TryOnRoom({
       streamRef.current = stream;
       facingRef.current = next;
       setFacing(next);
-      const limit = fpsLimit();
+      const mobile = isMobileClient();
+      const tier = tierRef.current;
+      const limit = mobile ? mobileFpsLimit(tier) : 30;
       const source = sdk.createMediaStreamSource(stream, {
         cameraType: next,
         transform:
@@ -445,8 +527,16 @@ export function TryOnRoom({
         disableSourceAudio: true,
         fpsLimit: limit,
       });
+      sourceRef.current = source;
       await session.setSource(source);
       await session.setFPSLimit(limit);
+      if (mobile) {
+        try {
+          await applyRenderBudget(session, source, tier);
+        } catch {
+          /* ignore */
+        }
+      }
     } catch {
       showToast("Couldn't switch cameras.");
     }
@@ -479,9 +569,15 @@ export function TryOnRoom({
       setSize(product.sizes[Math.floor(product.sizes.length / 2)] ?? "");
       setColor(product.colors[0]);
       setSizeOpen(false);
-      if (phase === "live") void wear(product);
+      if (phase === "live") {
+        void (async () => {
+          await wear(product);
+          const session = sessionRef.current;
+          if (session && isMobileClient()) watchPerformance(session);
+        })();
+      }
     },
-    [index, phase, products, wear],
+    [index, phase, products, watchPerformance, wear],
   );
 
   /* Add the active piece to the bag */
