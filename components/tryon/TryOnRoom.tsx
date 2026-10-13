@@ -670,7 +670,7 @@ export function TryOnRoom({
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/60 to-transparent px-4 pb-14 pt-[max(1rem,env(safe-area-inset-top))]">
         <div className="flex items-start justify-between gap-4">
           <div className="pointer-events-auto min-w-0">
-            <p className="font-sans text-[10px] uppercase tracking-[0.24em] text-white/60">
+            <p className="font-sans text-[12px] uppercase tracking-[0.08em] text-white/60">
               Live try-on
             </p>
             <p className="truncate font-serif text-2xl leading-tight">
@@ -706,7 +706,7 @@ export function TryOnRoom({
       {/* Fitting / preparing indicator */}
       {phase === "live" && fitting && (
         <div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 flex -translate-y-1/2 justify-center">
-          <div className="flex items-center gap-2 rounded-full bg-black/55 px-4 py-2 font-sans text-xs uppercase tracking-[0.18em] backdrop-blur">
+          <div className="flex items-center gap-2 rounded-full bg-black/55 px-4 py-2 font-sans text-xs uppercase tracking-[0.08em] backdrop-blur">
             <Loader2 size={14} className="animate-spin" /> Fitting…
           </div>
         </div>
@@ -760,7 +760,7 @@ export function TryOnRoom({
               <button
                 type="button"
                 onClick={() => setSizeOpen((v) => !v)}
-                className="rounded-full border border-white/35 bg-black/35 px-4 py-2 font-sans text-[11px] uppercase tracking-[0.18em] backdrop-blur"
+                className="rounded-full border border-white/35 bg-black/35 px-4 py-2 font-sans text-[12px] uppercase tracking-[0.08em] backdrop-blur"
               >
                 Size {size}
               </button>
@@ -774,7 +774,7 @@ export function TryOnRoom({
                         setSize(s);
                         setSizeOpen(false);
                       }}
-                      className={`min-w-10 rounded-full px-3 py-1.5 font-sans text-[11px] uppercase tracking-wider ${
+                      className={`min-w-10 rounded-full px-3 py-1.5 font-sans text-[12px] uppercase tracking-wider ${
                         s === size ? "bg-white text-black" : "text-white/85"
                       }`}
                     >
@@ -823,7 +823,7 @@ export function TryOnRoom({
                 type="button"
                 onClick={addToBag}
                 disabled={!active.inStock}
-                className={`relative flex items-center gap-2 rounded-full px-4 py-2.5 font-sans text-[11px] uppercase tracking-[0.18em] transition disabled:opacity-40 ${
+                className={`relative flex items-center gap-2 rounded-full px-4 py-2.5 font-sans text-[12px] uppercase tracking-[0.08em] transition disabled:opacity-40 ${
                   added ? "bg-emerald-400 text-black" : "bg-white text-black"
                 }`}
               >
@@ -832,7 +832,7 @@ export function TryOnRoom({
                   {added ? "Added" : active.inStock ? "Add to bag" : "Sold out"}
                 </span>
                 {count > 0 && (
-                  <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-rust px-1 font-sans text-[10px] text-white">
+                  <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-rust px-1 font-sans text-[12px] text-white">
                     {count}
                   </span>
                 )}
@@ -844,7 +844,7 @@ export function TryOnRoom({
             <div className="mt-3 flex justify-end">
               <Link
                 href="/cart"
-                className="font-sans text-[10px] uppercase tracking-[0.18em] text-white/70 underline-offset-4 hover:underline"
+                className="font-sans text-[12px] uppercase tracking-[0.08em] text-white/70 underline-offset-4 hover:underline"
               >
                 View bag
               </Link>
@@ -883,7 +883,7 @@ export function TryOnRoom({
                 draggable={false}
               />
             </div>
-            <p className="font-sans text-[11px] uppercase tracking-[0.28em] text-white/60">
+            <p className="font-sans text-[12px] uppercase tracking-[0.08em] text-white/60">
               Live AR fitting room
             </p>
             <h1 className="mt-3 max-w-sm font-serif text-4xl leading-tight">
@@ -906,7 +906,7 @@ export function TryOnRoom({
             </p>
 
             {phase === "starting" ? (
-              <div className="mt-8 flex items-center gap-3 font-sans text-xs uppercase tracking-[0.2em] text-white/80">
+              <div className="mt-8 flex items-center gap-3 font-sans text-xs uppercase tracking-[0.08em] text-white/80">
                 <Loader2 size={16} className="animate-spin" /> {step}
               </div>
             ) : (
@@ -915,7 +915,7 @@ export function TryOnRoom({
                   <button
                     type="button"
                     onClick={() => void start()}
-                    className="flex items-center justify-center gap-2 rounded-full bg-white py-3.5 font-sans text-[11px] uppercase tracking-[0.22em] text-black"
+                    className="flex items-center justify-center gap-2 rounded-full bg-white py-3.5 font-sans text-[12px] uppercase tracking-[0.08em] text-black"
                   >
                     {phase === "intro" ? (
                       <Camera size={14} />
@@ -927,7 +927,7 @@ export function TryOnRoom({
                 )}
                 <Link
                   href={backHref}
-                  className="rounded-full border border-white/30 py-3.5 font-sans text-[11px] uppercase tracking-[0.22em] text-white/85"
+                  className="rounded-full border border-white/30 py-3.5 font-sans text-[12px] uppercase tracking-[0.08em] text-white/85"
                 >
                   Back to product
                 </Link>
@@ -959,7 +959,7 @@ export function TryOnRoom({
               <button
                 type="button"
                 onClick={saveShot}
-                className="flex items-center justify-center gap-2 rounded-full border border-white/35 py-3 font-sans text-[11px] uppercase tracking-[0.16em]"
+                className="flex items-center justify-center gap-2 rounded-full border border-white/35 py-3 font-sans text-[12px] uppercase tracking-[0.08em]"
               >
                 <Download size={14} /> Save
               </button>
@@ -967,7 +967,7 @@ export function TryOnRoom({
                 <button
                   type="button"
                   onClick={() => void shareShot()}
-                  className="flex items-center justify-center gap-2 rounded-full border border-white/35 py-3 font-sans text-[11px] uppercase tracking-[0.16em]"
+                  className="flex items-center justify-center gap-2 rounded-full border border-white/35 py-3 font-sans text-[12px] uppercase tracking-[0.08em]"
                 >
                   <Share2 size={14} /> Share
                 </button>
@@ -975,7 +975,7 @@ export function TryOnRoom({
                 <button
                   type="button"
                   onClick={() => setShot(null)}
-                  className="flex items-center justify-center gap-2 rounded-full border border-white/35 py-3 font-sans text-[11px] uppercase tracking-[0.16em]"
+                  className="flex items-center justify-center gap-2 rounded-full border border-white/35 py-3 font-sans text-[12px] uppercase tracking-[0.08em]"
                 >
                   <RefreshCcw size={14} /> Retake
                 </button>
@@ -987,7 +987,7 @@ export function TryOnRoom({
                   setShot(null);
                 }}
                 disabled={!active.inStock}
-                className="flex items-center justify-center gap-2 rounded-full bg-white py-3 font-sans text-[11px] uppercase tracking-[0.16em] text-black disabled:opacity-40"
+                className="flex items-center justify-center gap-2 rounded-full bg-white py-3 font-sans text-[12px] uppercase tracking-[0.08em] text-black disabled:opacity-40"
               >
                 <ShoppingBag size={14} /> Bag · {size}
               </button>

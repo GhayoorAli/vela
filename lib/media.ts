@@ -19,10 +19,22 @@ export const VISUALS = {
 
 /** Three colourways per category so landscape tiles fill edge-to-edge. */
 export const CATEGORY_COLLAGE: Record<string, string[]> = {
-  hoodies: [shot("ember-hoodie.png"), shot("ivory-hoodie.png"), shot("navy-hoodie.png")],
+  hoodies: [
+    shot("ember-hoodie.png"),
+    shot("ivory-hoodie.png"),
+    shot("navy-hoodie.png"),
+  ],
   tees: [shot("rust-tee.png"), shot("sage-tee.png"), shot("wine-tee.png")],
-  trousers: [shot("indigo-jeans.png"), shot("sand-chinos.png"), shot("rust-chinos.png")],
-  eyewear: [shot("tortoise-frames.png"), shot("halo-rounds.png"), shot("ember-cateye.png")],
+  trousers: [
+    shot("indigo-jeans.png"),
+    shot("sand-chinos.png"),
+    shot("rust-chinos.png"),
+  ],
+  eyewear: [
+    shot("tortoise-frames.png"),
+    shot("halo-rounds.png"),
+    shot("ember-cateye.png"),
+  ],
 };
 
 export const CATEGORY_IMAGES: Record<string, string> = {
@@ -36,15 +48,19 @@ const CATEGORY_ORDER = ["hoodies", "tees", "trousers", "eyewear"] as const;
 
 export function sortCategories<T extends { slug: string }>(rows: T[]) {
   return [...rows].sort((a, b) => {
-    const ai = CATEGORY_ORDER.indexOf(a.slug as (typeof CATEGORY_ORDER)[number]);
-    const bi = CATEGORY_ORDER.indexOf(b.slug as (typeof CATEGORY_ORDER)[number]);
+    const ai = CATEGORY_ORDER.indexOf(
+      a.slug as (typeof CATEGORY_ORDER)[number],
+    );
+    const bi = CATEGORY_ORDER.indexOf(
+      b.slug as (typeof CATEGORY_ORDER)[number],
+    );
     return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
   });
 }
 
 export const PRODUCT_IMAGES: Record<string, string[]> = {
-  "ivory-hoodie": [shot("ivory-hoodie.png")],
-  "ember-hoodie": [shot("ember-hoodie.png")],
+  "ivory-hoodie": ["/editorial/ivory-v3.webp", shot("ivory-hoodie.png")],
+  "ember-hoodie": ["/editorial/portrait-v3.webp", shot("ember-hoodie.png")],
   "navy-hoodie": [shot("navy-hoodie.png")],
   "moss-hoodie": [shot("moss-hoodie.png")],
   "ink-hoodie": [shot("ink-hoodie.png")],
@@ -55,7 +71,7 @@ export const PRODUCT_IMAGES: Record<string, string[]> = {
   "sage-tee": [shot("sage-tee.png")],
   "sky-tee": [shot("sky-tee.png")],
   "wine-tee": [shot("wine-tee.png")],
-  "indigo-jeans": [shot("indigo-jeans.png")],
+  "indigo-jeans": ["/editorial/denim-v3.webp", shot("indigo-jeans.png")],
   "sand-chinos": [shot("sand-chinos.png")],
   "ink-trousers": [shot("ink-trousers.png")],
   "moss-trousers": [shot("moss-trousers.png")],
@@ -63,7 +79,7 @@ export const PRODUCT_IMAGES: Record<string, string[]> = {
   "rust-chinos": [shot("rust-chinos.png")],
   "ink-wayfarers": [shot("ink-wayfarers.png")],
   "tortoise-frames": [shot("tortoise-frames.png")],
-  "halo-rounds": [shot("halo-rounds.png")],
+  "halo-rounds": ["/editorial/eyewear-v3.webp", shot("halo-rounds.png")],
   "clear-coast": [shot("clear-coast.png")],
   "moss-sunglasses": [shot("moss-sunglasses.png")],
   "ember-cateye": [shot("ember-cateye.png")],

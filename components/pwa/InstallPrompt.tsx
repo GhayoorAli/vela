@@ -26,7 +26,9 @@ function isIos() {
 }
 
 export function InstallPrompt() {
-  const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(
+    null,
+  );
   const [iosHint, setIosHint] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -35,6 +37,7 @@ export function InstallPrompt() {
 
     const onPrompt = (event: Event) => {
       event.preventDefault();
+      if (sessionStorage.getItem(DISMISS_KEY)) return;
       setDeferred(event as BeforeInstallPromptEvent);
       setOpen(true);
     };
@@ -69,8 +72,8 @@ export function InstallPrompt() {
   if (!open && !iosHint) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-[calc(4.25rem+env(safe-area-inset-bottom))] z-40 px-3 md:bottom-6 md:flex md:justify-center">
-      <div className="mx-auto flex w-full max-w-lg items-start gap-3 border border-ink/10 bg-ink px-4 py-3.5 text-paper shadow-2xl">
+    <div className="atelier-install-prompt">
+      <div className="flex w-full items-center gap-5 text-paper">
         <div className="min-w-0 flex-1">
           <p className="font-serif text-xl leading-tight">Install Vela</p>
           {iosHint && !deferred ? (
@@ -81,13 +84,17 @@ export function InstallPrompt() {
             </p>
           ) : (
             <p className="mt-1 font-sans text-[12px] leading-relaxed text-paper/70">
-              Add the house to your home screen. Shop, try on, and check out
-              like a native app.
+              Keep Vela on your home screen. Shop, try on, and check out like a
+              native app.
             </p>
           )}
         </div>
         {deferred && (
-          <button type="button" onClick={() => void install()} className="btn-light shrink-0 px-4 py-2">
+          <button
+            type="button"
+            onClick={() => void install()}
+            className="btn-light shrink-0 px-4 py-2"
+          >
             Install
           </button>
         )}

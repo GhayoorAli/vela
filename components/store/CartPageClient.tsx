@@ -14,9 +14,9 @@ export function CartPageClient() {
     return (
       <div className="py-24 text-center">
         <p className="eyebrow">Bag</p>
-        <p className="mt-3 font-serif text-5xl tracking-tight">Your bag is empty</p>
+        <p className="mt-3 font-serif text-3xl tracking-tight md:text-4xl">Your bag is empty</p>
         <Link href="/shop" className="btn-ghost mt-10">
-          Shop the edit
+          Browse the collection
         </Link>
       </div>
     );
@@ -44,7 +44,7 @@ export function CartPageClient() {
                   </Link>
                   <p className="font-sans text-sm">{formatPrice(item.price * item.qty)}</p>
                 </div>
-                <p className="mt-1 font-sans text-[10px] uppercase tracking-[0.18em] text-ink/40">
+                <p className="mt-1 font-sans text-[12px] uppercase tracking-[0.08em] text-ink/40">
                   {item.color} · {item.size}
                 </p>
                 <div className="mt-auto flex items-center gap-4 pt-4">
@@ -84,7 +84,7 @@ export function CartPageClient() {
               <span>Subtotal</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
-            <p className="mt-3 font-sans text-xs leading-relaxed text-ink/45">
+            <p className="mt-3 font-sans text-sm leading-relaxed text-ink/45">
               Shipping calculated at delivery. Cash on delivery available.
             </p>
             <Link href="/checkout" className="btn-solid mt-8 w-full">

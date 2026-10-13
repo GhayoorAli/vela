@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, X } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 
@@ -14,6 +15,37 @@ export function CartDrawer({
   onClose: () => void;
 }) {
   const { items, setQty, remove, subtotal } = useCart();
+  const dialog = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    dialog.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+      if (event.key !== "Tab") return;
+      const nodes = dialog.current?.querySelectorAll<HTMLElement>(
+        "a[href], button:not([disabled])",
+      );
+      if (!nodes?.length) return;
+      const first = nodes[0],
+        last = nodes[nodes.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      previousFocus?.focus();
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open, onClose]);
   if (!open) return null;
 
   return (
@@ -24,22 +56,39 @@ export function CartDrawer({
         className="absolute inset-0 bg-ink/50 backdrop-blur-[2px]"
         onClick={onClose}
       />
-      <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-paper">
-        <div className="flex items-center justify-between border-b border-ink/10 px-6 py-5">
+      <aside
+        ref={dialog}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="bag-title"
+        className="studio-bag-drawer absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-paper"
+      >
+        <div className="bag-drawer-heading flex items-center justify-between px-6 py-7">
           <div>
-            <p className="eyebrow">Your selection</p>
-            <h2 className="mt-1 font-serif text-3xl tracking-tight">Bag</h2>
+            <h2
+              id="bag-title"
+              className="mt-2 text-3xl font-medium tracking-tight"
+            >
+              Your shopping bag
+            </h2>
           </div>
-          <button type="button" aria-label="Close" onClick={onClose}>
+          <button
+            type="button"
+            aria-label="Close"
+            className="min-h-11 min-w-11"
+            onClick={onClose}
+          >
             <X size={20} strokeWidth={1.5} />
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-6">
           {items.length === 0 ? (
             <div className="pt-16 text-center">
-              <p className="font-serif text-3xl tracking-tight">Your bag is empty</p>
+              <p className="font-serif text-3xl tracking-tight">
+                Your bag is empty
+              </p>
               <p className="mt-2 font-sans text-sm text-ink/50">
-                The edit is waiting.
+                Add items from the collection to get started.
               </p>
               <button
                 type="button"
@@ -52,9 +101,17 @@ export function CartDrawer({
           ) : (
             <ul className="space-y-6">
               {items.map((item) => (
-                <li key={`${item.productId}-${item.size}-${item.color}`} className="flex gap-4">
+                <li
+                  key={`${item.productId}-${item.size}-${item.color}`}
+                  className="flex gap-4"
+                >
                   <div className="relative h-28 w-24 shrink-0 overflow-hidden bg-sand">
-                    <Image src={item.image} alt="" fill className="object-cover" />
+                    <Image
+                      src={item.image}
+                      alt=""
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                   <div className="min-w-0 flex-1">
                     <Link
@@ -64,7 +121,7 @@ export function CartDrawer({
                     >
                       {item.name}
                     </Link>
-                    <p className="mt-1 font-sans text-[10px] uppercase tracking-[0.18em] text-ink/40">
+                    <p className="mt-1 font-sans text-[12px] uppercase tracking-[0.08em] text-ink/40">
                       {item.color} · {item.size}
                     </p>
                     <div className="mt-3 flex items-center justify-between">
@@ -73,26 +130,46 @@ export function CartDrawer({
                           type="button"
                           className="p-1.5"
                           aria-label="Decrease"
-                          onClick={() => setQty(item.productId, item.size, item.color, item.qty - 1)}
+                          onClick={() =>
+                            setQty(
+                              item.productId,
+                              item.size,
+                              item.color,
+                              item.qty - 1,
+                            )
+                          }
                         >
                           <Minus size={12} />
                         </button>
-                        <span className="w-6 text-center font-sans text-xs">{item.qty}</span>
+                        <span className="w-6 text-center font-sans text-xs">
+                          {item.qty}
+                        </span>
                         <button
                           type="button"
                           className="p-1.5"
                           aria-label="Increase"
-                          onClick={() => setQty(item.productId, item.size, item.color, item.qty + 1)}
+                          onClick={() =>
+                            setQty(
+                              item.productId,
+                              item.size,
+                              item.color,
+                              item.qty + 1,
+                            )
+                          }
                         >
                           <Plus size={12} />
                         </button>
                       </div>
-                      <p className="font-sans text-sm">{formatPrice(item.price * item.qty)}</p>
+                      <p className="font-sans text-sm">
+                        {formatPrice(item.price * item.qty)}
+                      </p>
                     </div>
                     <button
                       type="button"
-                      onClick={() => remove(item.productId, item.size, item.color)}
-                      className="mt-2 font-sans text-[10px] uppercase tracking-[0.18em] text-ink/35 hover:text-ink"
+                      onClick={() =>
+                        remove(item.productId, item.size, item.color)
+                      }
+                      className="mt-2 font-sans text-[12px] uppercase tracking-[0.08em] text-ink/35 hover:text-ink"
                     >
                       Remove
                     </button>
@@ -108,16 +185,20 @@ export function CartDrawer({
               <span>Subtotal</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
-            <p className="mb-5 font-sans text-[11px] text-ink/40">
+            <p className="mb-5 font-sans text-[12px] text-ink/40">
               Shipping calculated at delivery.
             </p>
-            <Link href="/checkout" onClick={onClose} className="btn-solid w-full">
+            <Link
+              href="/checkout"
+              onClick={onClose}
+              className="btn-solid w-full"
+            >
               Checkout
             </Link>
             <Link
               href="/cart"
               onClick={onClose}
-              className="mt-3 block py-2 text-center font-sans text-[11px] uppercase tracking-[0.2em] text-ink/50"
+              className="mt-3 block py-2 text-center font-sans text-[12px] uppercase tracking-[0.08em] text-ink/50"
             >
               View bag
             </Link>

@@ -19,14 +19,8 @@ export default async function TryOnPage({
   const config = getTryOnConfig();
   if (!config) {
     return (
-      <Notice
-        title="The fitting room isn't connected yet"
-        backHref={backHref}
-      >
-        Add <code>CAMERA_KIT_API_TOKEN</code> and{" "}
-        <code>CAMERA_KIT_LENS_GROUP_ID</code> from the Snap Camera Kit portal to{" "}
-        <code>.env</code>, then restart the server. See{" "}
-        <code>.env.example</code> for the steps.
+      <Notice title="AR try-on is currently unavailable." backHref={backHref}>
+        You can still browse and shop the collection.
       </Notice>
     );
   }
@@ -38,11 +32,7 @@ export default async function TryOnPage({
   if (products.length === 0) {
     return (
       <Notice title="No pieces are ready to try on yet" backHref={backHref}>
-        Attach a Lens ID to a product in{" "}
-        <Link href="/admin/products" className="underline">
-          Admin → Products
-        </Link>{" "}
-        and it will appear here.
+        No products currently support camera try-on. Browse the collection below.
       </Notice>
     );
   }
@@ -54,7 +44,7 @@ export default async function TryOnPage({
         <div className="mt-6">
           <Link
             href="/try-on"
-            className="inline-flex items-center gap-2 bg-paper px-6 py-3 font-sans text-[11px] uppercase tracking-[0.2em] text-ink"
+            className="inline-flex items-center gap-2 bg-paper px-6 py-3 font-sans text-[12px] uppercase tracking-[0.08em] text-ink"
           >
             <Camera size={14} /> Open the fitting room
           </Link>
@@ -83,19 +73,22 @@ function Notice({
   children: React.ReactNode;
 }) {
   return (
-    <main className="flex min-h-[100dvh] flex-col items-center justify-center bg-ink px-6 text-center text-paper">
-      <p className="font-sans text-[10px] font-medium uppercase tracking-[0.32em] text-paper/45">
-        Live AR fitting room
-      </p>
-      <h1 className="mt-5 max-w-lg font-serif text-5xl leading-[1.05] tracking-tight">{title}</h1>
-      <div className="mt-5 max-w-md font-sans text-sm font-light leading-relaxed text-paper/65 [&_code]:bg-paper/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[12px]">
+    <main className="mirror-notice flex min-h-[100dvh] flex-col items-center justify-center bg-petrol px-6 text-center text-paper">
+      <span className="mb-10 text-6xl text-citron" aria-hidden>
+        ✳
+      </span>
+      <p className="studio-label text-citron">AR TRY-ON</p>
+      <h1 className="mt-5 max-w-xl text-4xl font-medium leading-[1.1] tracking-[-0.05em] md:text-6xl">
+        {title}
+      </h1>
+      <div className="mt-5 max-w-md font-sans text-sm font-normal leading-relaxed text-paper/65 [&_code]:bg-paper/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[12px]">
         {children}
       </div>
       <Link
         href={backHref}
-        className="mt-12 border border-paper/35 px-7 py-3.5 font-sans text-[11px] uppercase tracking-[0.22em] text-paper/90 transition hover:bg-paper hover:text-ink"
+        className="studio-button studio-button-citron mt-10"
       >
-        Back
+        Back to the collection
       </Link>
     </main>
   );

@@ -24,6 +24,7 @@ export function RecommendedRow({
 }: Props) {
   const [data, setData] = useState<RecommendResponse | null>(null);
   const [failed, setFailed] = useState(false);
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
     if (mode === "cart" && !cartSlugs?.length) {
@@ -59,30 +60,54 @@ export function RecommendedRow({
       });
 
     return () => controller.abort();
-  }, [mode, productSlug, query, cartSlugs?.join("|")]);
+  }, [mode, productSlug, query, cartSlugs?.join("|"), retry]);
 
-  if (failed && !data) return null;
   if (mode === "cart" && !cartSlugs?.length) return null;
+  if (failed && !data)
+    return (
+      <section className="recommendation-error" role="alert">
+        <Sparkles size={20} />
+        <div>
+          <h2>We couldn’t load your suggestions.</h2>
+          <p>Try again, or describe a different look.</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setFailed(false);
+            setRetry((value) => value + 1);
+          }}
+        >
+          Try again
+        </button>
+      </section>
+    );
 
   const picks = data?.picks ?? [];
 
   return (
-    <section className={className ?? "mt-24"}>
+    <section
+      className={`recommended-section ${className ?? "mt-24"}`}
+      aria-label="Styling suggestions"
+      aria-busy={!data}
+    >
       <div className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-        <div>
+        <div aria-live="polite">
           <p className="eyebrow inline-flex items-center gap-2">
             {data?.source === "ai" && (
               <Sparkles size={11} strokeWidth={1.75} className="text-rust" />
             )}
-            {data?.eyebrow ?? "The stylist"}
+            {data?.eyebrow ?? "OUTFIT SUGGESTIONS"}
           </p>
           <h2 className="mt-2 font-serif text-4xl tracking-tight md:text-5xl">
-            {data?.headline ?? "Finding pieces…"}
+            {data?.headline ?? "Putting your look together…"}
           </h2>
         </div>
-        {data?.source === "ai" && (
-          <p className="font-sans text-[11px] uppercase tracking-[0.18em] text-ink/35">
-            AI styled from the catalog
+        {data && (
+          <p className="font-sans text-[12px] uppercase tracking-[0.08em] text-ink/35">
+            {data.source === "ai"
+              ? "AI STYLED FROM THE COLLECTION"
+              : "SELECTED FROM THE COLLECTION"}
           </p>
         )}
       </div>
@@ -100,7 +125,11 @@ export function RecommendedRow({
       ) : (
         <div className="grid grid-cols-2 gap-x-4 gap-y-12 md:grid-cols-4 md:gap-x-6">
           {picks.map((p) => (
-            <Link key={p.slug} href={`/products/${p.slug}`} className="group block">
+            <Link
+              key={p.slug}
+              href={`/products/${p.slug}`}
+              className="group block"
+            >
               <div className="shine relative aspect-[3/4] overflow-hidden bg-sand">
                 {p.image && (
                   <Image
@@ -112,7 +141,7 @@ export function RecommendedRow({
                   />
                 )}
                 {p.tryOn && (
-                  <span className="absolute left-3 top-3 inline-flex items-center gap-1 bg-paper/95 px-2 py-1 font-sans text-[9px] uppercase tracking-[0.18em] text-ink">
+                  <span className="absolute left-3 top-3 inline-flex items-center gap-1 bg-paper/95 px-2 py-1 font-sans text-[12px] uppercase tracking-[0.08em] text-ink">
                     <Camera size={10} strokeWidth={1.75} /> Try on
                   </span>
                 )}
@@ -125,7 +154,7 @@ export function RecommendedRow({
                   {formatPrice(p.price)}
                 </p>
               </div>
-              <p className="mt-2 font-sans text-[12px] font-light leading-relaxed text-ink/55">
+              <p className="mt-2 font-sans text-sm font-normal leading-relaxed text-ink/55">
                 {p.reason}
               </p>
             </Link>

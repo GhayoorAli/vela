@@ -7,7 +7,7 @@ export default function NotFound() {
       <h1 className="mt-4 font-serif text-6xl tracking-tight md:text-7xl">Not found</h1>
       <p className="mt-4 font-sans text-sm text-ink/50">That page isn’t in the catalog.</p>
       <Link href="/shop" className="btn-solid mt-10">
-        Shop the edit
+        Browse the collection
       </Link>
     </main>
   );

@@ -58,7 +58,7 @@ export function CheckoutForm() {
           />
           <span>
             <span className="block font-sans text-sm">Cash on delivery</span>
-            <span className={`font-sans text-xs ${method === "cod" ? "text-paper/60" : "text-ink/50"}`}>
+            <span className={`font-sans text-sm ${method === "cod" ? "text-paper/60" : "text-ink/50"}`}>
               Pay when the order arrives. No card fee.
             </span>
           </span>
@@ -76,7 +76,7 @@ export function CheckoutForm() {
           />
           <span>
             <span className="block font-sans text-sm">Bank transfer</span>
-            <span className={`font-sans text-xs ${method === "transfer" ? "text-paper/60" : "text-ink/50"}`}>
+            <span className={`font-sans text-sm ${method === "transfer" ? "text-paper/60" : "text-ink/50"}`}>
               We’ll email account details after you place the order.
             </span>
           </span>
@@ -96,7 +96,7 @@ export function CheckoutForm() {
               >
                 <span>
                   {i.name} × {i.qty}
-                  <span className="block text-[10px] uppercase tracking-[0.16em] text-ink/40">
+                  <span className="block text-[12px] uppercase tracking-[0.08em] text-ink/40">
                     {i.color} · {i.size}
                   </span>
                 </span>

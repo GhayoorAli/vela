@@ -16,7 +16,7 @@ export default async function AdminOrders() {
       <h1 className="font-serif text-4xl">Orders</h1>
       <div className="mt-8 overflow-x-auto border border-ink/10 bg-paper">
         <table className="w-full text-left font-sans text-sm">
-          <thead className="border-b border-ink/10 text-[11px] uppercase tracking-wider text-ink/45">
+          <thead className="border-b border-ink/10 text-[12px] uppercase tracking-wider text-ink/45">
             <tr>
               <th className="px-4 py-3">Number</th>
               <th className="px-4 py-3">Customer</th>

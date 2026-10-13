@@ -6,13 +6,13 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Vela",
     short_name: "Vela",
     description:
-      "Hoodies, tees, trousers, and frames — try pieces on live with your camera before they arrive.",
+      "Find your look with AI styling and see camera-enabled pieces on yourself with live AR try-on.",
     start_url: "/",
     scope: "/",
     display: "standalone",
     orientation: "portrait-primary",
-    background_color: "#F3EEE6",
-    theme_color: "#F3EEE6",
+    background_color: "#EEEAE2",
+    theme_color: "#301E28",
     lang: "en",
     categories: ["shopping", "lifestyle"],
     icons: [
@@ -37,7 +37,13 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
     shortcuts: [
       {
-        name: "Shop the edit",
+        name: "AI personal stylist",
+        short_name: "AI stylist",
+        url: "/stylist",
+        icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],
+      },
+      {
+        name: "Shop the collection",
         short_name: "Shop",
         url: "/shop",
         icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }],

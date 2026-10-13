@@ -21,13 +21,13 @@ export default async function AdminOrderDetail({
 
   return (
     <div className="max-w-3xl">
-      <p className="font-sans text-[11px] uppercase tracking-[0.2em] text-ink/45">Order</p>
+      <p className="font-sans text-[12px] uppercase tracking-[0.2em] text-ink/45">Order</p>
       <h1 className="mt-1 font-serif text-4xl">{order.number}</h1>
       <p className="mt-2 font-sans text-sm text-ink/55">{formatDate(order.createdAt)}</p>
 
       <dl className="mt-8 grid gap-4 sm:grid-cols-2 font-sans text-sm">
         <div>
-          <dt className="text-[11px] uppercase tracking-wider text-ink/45">Customer</dt>
+          <dt className="text-[12px] uppercase tracking-wider text-ink/45">Customer</dt>
           <dd className="mt-1">
             {order.name}
             <br />
@@ -37,7 +37,7 @@ export default async function AdminOrderDetail({
           </dd>
         </div>
         <div>
-          <dt className="text-[11px] uppercase tracking-wider text-ink/45">Ship to</dt>
+          <dt className="text-[12px] uppercase tracking-wider text-ink/45">Ship to</dt>
           <dd className="mt-1">
             {order.address}
             <br />
@@ -57,7 +57,7 @@ export default async function AdminOrderDetail({
             </option>
           ))}
         </select>
-        <button type="submit" className="bg-ink px-4 py-2 font-sans text-[11px] uppercase tracking-[0.16em] text-paper">
+        <button type="submit" className="bg-ink px-4 py-2 font-sans text-[12px] uppercase tracking-[0.16em] text-paper">
           Update status
         </button>
       </form>
@@ -67,7 +67,7 @@ export default async function AdminOrderDetail({
           <li key={item.id} className="flex justify-between px-4 py-3 font-sans text-sm">
             <span>
               {item.name} × {item.qty}
-              <span className="block text-[11px] uppercase tracking-wider text-ink/40">
+              <span className="block text-[12px] uppercase tracking-wider text-ink/40">
                 {item.color} · {item.size}
               </span>
             </span>
