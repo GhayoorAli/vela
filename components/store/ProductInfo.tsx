@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, ShoppingBag } from "lucide-react";
+import { Camera, ShoppingBag, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import type { StoreProduct } from "@/lib/types";
@@ -35,7 +35,7 @@ export function ProductInfo({ product }: { product: StoreProduct }) {
   }
 
   return (
-    <div>
+    <div className="studio-product-details">
       <p className="eyebrow">
         {product.category.name}
         {product.tryOnLensId ? " · Live try-on" : ""}
@@ -43,19 +43,20 @@ export function ProductInfo({ product }: { product: StoreProduct }) {
       <h1 className="mt-3 font-serif text-[2.35rem] leading-[1.05] tracking-tight sm:text-4xl md:text-[3.25rem]">
         {product.name}
       </h1>
-      <span className="mt-5 block h-px w-10 bg-rust" />
       <div className="mt-4 flex items-baseline gap-3">
-        <p className="font-sans text-lg tracking-wide">{formatPrice(product.price)}</p>
+        <p className="font-sans text-lg tracking-wide">
+          {formatPrice(product.price)}
+        </p>
         {sale && (
           <p className="font-sans text-sm text-ink/35 line-through">
             {formatPrice(product.compareAt!)}
           </p>
         )}
       </div>
-      <p className="mt-7 max-w-md font-sans text-[15px] font-light leading-relaxed text-ink/65">
+      <p className="mt-7 max-w-md font-sans text-base font-normal leading-relaxed text-ink/65">
         {product.description}
       </p>
-      <p className="mt-4 font-sans text-[11px] uppercase tracking-[0.18em] text-ink/40">
+      <p className="mt-4 font-sans text-[12px] uppercase tracking-[0.08em] text-ink/40">
         {product.fabric}
         {product.inStock ? ` · ${product.stock} in stock` : " · Sold out"}
       </p>
@@ -67,6 +68,7 @@ export function ProductInfo({ product }: { product: StoreProduct }) {
             <button
               key={c.name}
               type="button"
+              aria-pressed={color?.name === c.name}
               onClick={() => setColor(c)}
               className={`flex items-center gap-2 border px-3 py-2 font-sans text-xs transition ${
                 color?.name === c.name
@@ -74,7 +76,10 @@ export function ProductInfo({ product }: { product: StoreProduct }) {
                   : "border-ink/15 hover:border-ink/40"
               }`}
             >
-              <span className="h-3 w-3 rounded-full" style={{ background: c.hex }} />
+              <span
+                className="h-3 w-3 rounded-full"
+                style={{ background: c.hex }}
+              />
               {c.name}
             </button>
           ))}
@@ -88,9 +93,12 @@ export function ProductInfo({ product }: { product: StoreProduct }) {
             <button
               key={s}
               type="button"
+              aria-pressed={size === s}
               onClick={() => setSize(s)}
               className={`min-w-12 px-3 py-2.5 font-sans text-xs transition ${
-                size === s ? "bg-ink text-paper" : "border border-ink/15 hover:border-ink/40"
+                size === s
+                  ? "bg-ink text-paper"
+                  : "border border-ink/15 hover:border-ink/40"
               }`}
             >
               {s}
@@ -101,11 +109,23 @@ export function ProductInfo({ product }: { product: StoreProduct }) {
 
       <div className="mt-10 flex items-center gap-3">
         <div className="flex border border-ink/15">
-          <button type="button" className="px-3.5 py-3.5" onClick={() => setQty((n) => Math.max(1, n - 1))}>
+          <button
+            type="button"
+            aria-label="Decrease quantity"
+            className="px-3.5 py-3.5"
+            onClick={() => setQty((n) => Math.max(1, n - 1))}
+          >
             −
           </button>
-          <span className="w-8 py-3.5 text-center font-sans text-sm">{qty}</span>
-          <button type="button" className="px-3.5 py-3.5" onClick={() => setQty((n) => n + 1)}>
+          <span className="w-8 py-3.5 text-center font-sans text-sm">
+            {qty}
+          </span>
+          <button
+            type="button"
+            aria-label="Increase quantity"
+            className="px-3.5 py-3.5"
+            onClick={() => setQty((n) => n + 1)}
+          >
             +
           </button>
         </div>
@@ -120,6 +140,13 @@ export function ProductInfo({ product }: { product: StoreProduct }) {
         </button>
       </div>
 
+      <Link
+        href={`/stylist?look=${encodeURIComponent(`Style ${product.name} with matching pieces`)}`}
+        className="btn-ghost mt-3 w-full"
+      >
+        <Sparkles size={16} /> Style this piece with AI
+      </Link>
+
       {product.tryOnLensId && (
         <>
           <Link
@@ -128,7 +155,7 @@ export function ProductInfo({ product }: { product: StoreProduct }) {
           >
             <Camera size={14} strokeWidth={1.75} /> Try it on live
           </Link>
-          <p className="mt-3 font-sans text-[12px] leading-relaxed text-ink/40">
+          <p className="mt-3 font-sans text-sm leading-relaxed text-ink/40">
             Opens your camera and renders the piece on your body in real time —
             turn, move, and see how it falls before you order.
           </p>

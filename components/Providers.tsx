@@ -5,7 +5,6 @@ import { CartProvider } from "@/lib/cart";
 import { Footer } from "@/components/store/Footer";
 import { Header } from "@/components/store/Header";
 import { SiteChrome } from "@/components/store/SiteChrome";
-import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { MobileTabBar } from "@/components/pwa/MobileTabBar";
 import { StandaloneClass } from "@/components/pwa/StandaloneClass";
 
@@ -22,10 +21,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <div className="flex min-h-screen flex-col pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-0">
           <SiteChrome />
           <Header />
-          <div className="flex-1">{children}</div>
+          <div id="store-content" className="flex-1" tabIndex={-1}>
+            {children}
+          </div>
           <Footer />
           <MobileTabBar />
-          <InstallPrompt />
         </div>
       )}
     </CartProvider>

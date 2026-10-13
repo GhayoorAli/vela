@@ -25,7 +25,7 @@ function SuccessBody() {
           Reference <span className="text-ink">{order}</span>
         </p>
       )}
-      <p className="mx-auto mt-4 max-w-md font-sans text-sm font-light leading-relaxed text-ink/55">
+      <p className="mx-auto mt-4 max-w-md font-sans text-sm font-normal leading-relaxed text-ink/55">
         We’ll confirm by email. Pay cash on delivery or wait for transfer details.
       </p>
       <Link href="/shop" className="btn-solid mt-12">

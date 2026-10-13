@@ -30,7 +30,7 @@ export function StylistAsk() {
       </p>
       <p className="mt-3 max-w-2xl font-serif text-3xl tracking-tight md:text-4xl">
         Describe a look.
-        <span className="italic text-ink/55"> We’ll pull pieces from the house.</span>
+        <span className="italic text-ink/55"> We’ll suggest pieces from the collection.</span>
       </p>
       <form
         onSubmit={onSubmit}
@@ -59,7 +59,7 @@ export function StylistAsk() {
               setDraft(example);
               setQuery(example);
             }}
-            className="border border-ink/15 px-2.5 py-1.5 font-sans text-[11px] text-ink/65 transition hover:border-ink/40 hover:text-ink"
+            className="border border-ink/15 px-2.5 py-1.5 font-sans text-[12px] text-ink/65 transition hover:border-ink/40 hover:text-ink"
           >
             {example}
           </button>

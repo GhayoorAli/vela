@@ -1,24 +1,39 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Serif, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import { Providers } from "@/components/Providers";
 import "./globals.css";
+import "./editorial.css";
+import "./typography.css";
+import "./shopping-studio.css";
+import "./catalog.css";
 
-const serif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-serif",
+const display = localFont({
+  src: [
+    {
+      path: "../public/fonts/bodoni-moda-variable.ttf",
+      weight: "400 900",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/bodoni-moda-italic.ttf",
+      weight: "400 900",
+      style: "italic",
+    },
+  ],
+  display: "swap",
+  variable: "--font-display",
 });
 
-const sans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+const sans = localFont({
+  src: "../public/fonts/manrope-variable.ttf",
+  weight: "200 800",
+  display: "swap",
   variable: "--font-sans",
 });
 
 const APP_NAME = "Vela";
 const APP_DESCRIPTION =
-  "Hoodies, tees, trousers, and frames — try the clothes on live with your camera before they arrive.";
+  "A more personal way to shop: discover AI outfit suggestions, explore everyday pieces, and try camera-enabled styles on live with AR.";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
@@ -46,7 +61,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#F3EEE6",
+  themeColor: "#301E28",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -61,7 +76,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${serif.variable} ${sans.variable} bg-paper font-sans text-ink antialiased`}
+        className={`${sans.variable} ${display.variable} bg-paper font-sans text-ink antialiased`}
       >
         <Providers>{children}</Providers>
       </body>

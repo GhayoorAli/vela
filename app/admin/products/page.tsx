@@ -17,13 +17,13 @@ export default async function AdminProducts() {
     <div>
       <div className="flex items-center justify-between gap-4">
         <h1 className="font-serif text-4xl">Products</h1>
-        <Link href="/admin/products/new" className="bg-ink px-4 py-2 font-sans text-[11px] uppercase tracking-[0.18em] text-paper">
+        <Link href="/admin/products/new" className="bg-ink px-4 py-2 font-sans text-[12px] uppercase tracking-[0.18em] text-paper">
           New product
         </Link>
       </div>
       <div className="mt-8 overflow-x-auto border border-ink/10 bg-paper">
         <table className="w-full text-left font-sans text-sm">
-          <thead className="border-b border-ink/10 text-[11px] uppercase tracking-wider text-ink/45">
+          <thead className="border-b border-ink/10 text-[12px] uppercase tracking-wider text-ink/45">
             <tr>
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Category</th>
@@ -45,7 +45,7 @@ export default async function AdminProducts() {
                 <td className="px-4 py-3">{p.stock}</td>
                 <td className="px-4 py-3">
                   {p.tryOnLensId ? (
-                    <span className="font-mono text-[11px] text-ink/70" title={p.tryOnLensId}>
+                    <span className="font-mono text-[12px] text-ink/70" title={p.tryOnLensId}>
                       {p.tryOnLensId.length > 14
                         ? `${p.tryOnLensId.slice(0, 12)}…`
                         : p.tryOnLensId}

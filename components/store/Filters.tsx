@@ -43,6 +43,25 @@ export function FilterSidebar({
   const pathname = usePathname();
   const params = useSearchParams();
   const [open, setOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    panelRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Tab") return;
+      const nodes = panelRef.current?.querySelectorAll<HTMLElement>('a[href], button, input, [tabindex="0"]');
+      if (!nodes?.length) return;
+      const first = nodes[0], last = nodes[nodes.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    }
+    document.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = overflow; document.removeEventListener("keydown", onKey); previous?.focus(); };
+  }, [open]);
 
   const selected = useMemo(
     () => ({
@@ -106,8 +125,9 @@ export function FilterSidebar({
             <button
               key={s}
               type="button"
+              aria-pressed={selected.size === s}
               onClick={() => setParam("size", selected.size === s ? "" : s)}
-              className={`px-2.5 py-1.5 font-sans text-[11px] transition ${
+              className={`px-2.5 py-1.5 font-sans text-[12px] transition ${
                 selected.size === s
                   ? "bg-ink text-paper"
                   : "border border-ink/15 text-ink/70 hover:border-ink/40"
@@ -126,8 +146,9 @@ export function FilterSidebar({
             <button
               key={c}
               type="button"
+              aria-pressed={selected.color === c}
               onClick={() => setParam("color", selected.color === c ? "" : c)}
-              className={`px-2.5 py-1.5 font-sans text-[11px] transition ${
+              className={`px-2.5 py-1.5 font-sans text-[12px] transition ${
                 selected.color === c
                   ? "bg-ink text-paper"
                   : "border border-ink/15 text-ink/70 hover:border-ink/40"
@@ -144,14 +165,18 @@ export function FilterSidebar({
         <div className="mt-4 flex gap-4">
           <input
             type="number"
+            aria-label="Minimum price"
             placeholder="Min"
+            key={`min-${selected.min}`}
             defaultValue={selected.min}
             className="field"
             onBlur={(e) => setParam("minPrice", e.target.value)}
           />
           <input
             type="number"
+            aria-label="Maximum price"
             placeholder="Max"
+            key={`max-${selected.max}`}
             defaultValue={selected.max}
             className="field"
             onBlur={(e) => setParam("maxPrice", e.target.value)}
@@ -172,7 +197,7 @@ export function FilterSidebar({
       <button
         type="button"
         onClick={clear}
-        className="link-line font-sans text-[11px] uppercase tracking-[0.18em] text-ink/40"
+        className="link-line font-sans text-[12px] uppercase tracking-[0.08em] text-ink/40"
       >
         Clear filters
       </button>
@@ -180,24 +205,23 @@ export function FilterSidebar({
   );
 
   return (
-    <div className="w-full shrink-0 lg:w-56">
-      <div className="relative z-20 flex items-center justify-between gap-4 lg:hidden">
+    <div className="catalog-filter-controls">
+      <div className="relative z-20 flex items-center justify-between gap-4">
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-2 border border-ink/15 px-4 py-2.5 font-sans text-[11px] uppercase tracking-[0.18em]"
+          className="inline-flex items-center gap-2 border border-ink/15 px-4 py-2.5 font-sans text-[12px] uppercase tracking-[0.08em]"
         >
-          <SlidersHorizontal size={14} strokeWidth={1.5} /> Filters
+          <SlidersHorizontal size={16} strokeWidth={1.5} /> Filters{[selected.size, selected.color, selected.tryon, selected.min, selected.max].filter(Boolean).length > 0 && <span className="catalog-filter-count">{[selected.size, selected.color, selected.tryon, selected.min, selected.max].filter(Boolean).length}</span>}
         </button>
         <SortSelect value={selected.sort} onChange={(v) => setParam("sort", v)} />
       </div>
 
-      <aside className="hidden lg:block">{filters}</aside>
 
       {open && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <button type="button" className="absolute inset-0 bg-ink/50" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-0 h-full w-[min(86vw,24rem)] overflow-y-auto bg-paper p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-[calc(1.75rem+env(safe-area-inset-top))]">
+        <div className="catalog-filter-overlay fixed inset-0 z-[90]">
+          <button type="button" aria-label="Close filters" className="absolute inset-0 bg-ink/50" onClick={() => setOpen(false)} />
+          <div role="dialog" aria-modal="true" aria-label="Product filters" ref={panelRef} className="catalog-filter-panel absolute right-0 top-0 h-full w-[min(90vw,28rem)] overflow-y-auto bg-paper p-6 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-[calc(1.75rem+env(safe-area-inset-top))]">
             <div className="mb-8 flex items-center justify-between">
               <p className="font-serif text-3xl">Filters</p>
               <button type="button" onClick={() => setOpen(false)} aria-label="Close">
@@ -205,11 +229,12 @@ export function FilterSidebar({
               </button>
             </div>
             {filters}
+            <button type="button" onClick={() => setOpen(false)} className="catalog-filter-done">Show {resultCount} {resultCount === 1 ? "result" : "results"}</button>
           </div>
         </div>
       )}
 
-      <p className="sr-only">{resultCount} results</p>
+      <p className="sr-only">{resultCount} {resultCount === 1 ? "result" : "results"}</p>
     </div>
   );
 }
@@ -313,7 +338,7 @@ export function SortSelect({
                     onChange(s.value);
                     setOpen(false);
                   }}
-                  className={`flex w-full items-center justify-between gap-3 px-3.5 py-2.5 text-left font-sans text-[11px] uppercase tracking-[0.16em] transition ${
+                  className={`flex w-full items-center justify-between gap-3 px-3.5 py-2.5 text-left font-sans text-[12px] uppercase tracking-[0.08em] transition ${
                     active ? "bg-ink text-paper" : "text-ink/70 hover:bg-sand hover:text-ink"
                   }`}
                 >
@@ -336,7 +361,7 @@ export function SortSelect({
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1.5 font-sans text-[11px] uppercase tracking-[0.16em] text-ink outline-none"
+        className="inline-flex items-center gap-1.5 font-sans text-[12px] uppercase tracking-[0.08em] text-ink outline-none"
       >
         {label}
         <ChevronDown
@@ -358,7 +383,7 @@ export function ShopToolbar({ count }: { count: number }) {
 
   return (
     <div className="mb-10 hidden items-end justify-between border-b border-ink/10 pb-4 lg:flex">
-      <p className="font-sans text-[11px] uppercase tracking-[0.2em] text-ink/40">
+      <p className="font-sans text-[12px] uppercase tracking-[0.08em] text-ink/40">
         {count} pieces
       </p>
       <SortSelect

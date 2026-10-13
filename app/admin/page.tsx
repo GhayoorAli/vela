@@ -32,7 +32,7 @@ export default async function AdminHome() {
       <div className="mt-12">
         <div className="flex items-center justify-between">
           <h2 className="font-serif text-2xl">Recent orders</h2>
-          <Link href="/admin/orders" className="font-sans text-[11px] uppercase tracking-wider text-ink/50">
+          <Link href="/admin/orders" className="font-sans text-[12px] uppercase tracking-wider text-ink/50">
             All orders
           </Link>
         </div>
@@ -65,7 +65,7 @@ function Stat({
 }) {
   return (
     <div className="border border-ink/10 bg-paper p-5">
-      <p className="flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.16em] text-ink/45">
+      <p className="flex items-center gap-2 font-sans text-[12px] uppercase tracking-[0.16em] text-ink/45">
         {icon} {label}
       </p>
       <p className="mt-2 font-serif text-3xl">{value}</p>

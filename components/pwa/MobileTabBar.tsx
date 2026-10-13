@@ -2,11 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Camera, Home, LayoutGrid, ShoppingBag } from "lucide-react";
+import { Camera, Home, LayoutGrid, ShoppingBag, Sparkles } from "lucide-react";
 import { useCart } from "@/lib/cart";
 
 const TABS = [
-  { href: "/", label: "Home", icon: Home, match: (path: string) => path === "/" },
+  {
+    href: "/",
+    label: "Home",
+    icon: Home,
+    match: (path: string) => path === "/",
+  },
   {
     href: "/shop",
     label: "Shop",
@@ -15,8 +20,14 @@ const TABS = [
       path.startsWith("/shop") || path.startsWith("/products"),
   },
   {
+    href: "/stylist",
+    label: "AI stylist",
+    icon: Sparkles,
+    match: (path: string) => path === "/stylist",
+  },
+  {
     href: "/try-on",
-    label: "Try on",
+    label: "AR try-on",
     icon: Camera,
     match: (path: string) => path === "/try-on",
   },
@@ -38,7 +49,7 @@ export function MobileTabBar() {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-ink/10 bg-paper/95 backdrop-blur-xl md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <ul className="grid h-16 grid-cols-4">
+      <ul className="grid h-16 grid-cols-5">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const active = tab.match(pathname);
@@ -53,12 +64,12 @@ export function MobileTabBar() {
                 <span className="relative">
                   <Icon size={20} strokeWidth={active ? 1.9 : 1.5} />
                   {tab.href === "/cart" && count > 0 && (
-                    <span className="absolute -right-2.5 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center bg-ink px-1 font-sans text-[8px] text-paper">
+                    <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center bg-ink px-1 font-sans text-[12px] text-paper">
                       {count}
                     </span>
                   )}
                 </span>
-                <span className="font-sans text-[9px] font-medium uppercase tracking-[0.16em]">
+                <span className="mobile-tab-label font-sans text-[12px] font-medium">
                   {tab.label}
                 </span>
               </Link>

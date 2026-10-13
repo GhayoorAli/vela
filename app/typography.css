@@ -1,0 +1,553 @@
+/* Shared readable scale. Decorative brand marks are the only smaller exception. */
+:root {
+  --type-body: 1rem;
+  --type-small: 0.875rem;
+  --type-label: 0.75rem;
+}
+body {
+  font-size: var(--type-body);
+  line-height: 1.6;
+}
+.font-serif {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.atelier-home h1,
+.atelier-home h2,
+.atelier-home h3,
+.atelier-home em {
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+.atelier-hero h1 {
+  font-size: clamp(64px, 7.5vw, 116px);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+.atelier-label,
+.studio-label,
+.eyebrow {
+  font-size: var(--type-label);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+}
+.atelier-edit-heading h2,
+.discover-heading h2 {
+  font-size: clamp(40px, 4.5vw, 66px);
+  line-height: 1.12;
+}
+.atelier-mirror-copy h2 {
+  font-size: clamp(48px, 5vw, 76px);
+  line-height: 1.12;
+}
+.atelier-signoff h2 {
+  font-size: clamp(48px, 6.5vw, 92px);
+  line-height: 1.12;
+}
+.atelier-introduction h2,
+.look-panel h2,
+.stylist-intro h2 {
+  line-height: 1.2;
+}
+.hero-bottom p,
+.atelier-introduction > div > p,
+.atelier-edit-heading > p,
+.discover-heading > p,
+.look-panel > p:not(.atelier-label),
+.atelier-mirror-copy > p,
+.stylist-intro > p:last-child {
+  font-size: var(--type-body);
+  line-height: 1.75;
+}
+.atelier-hero-content > .atelier-label {
+  color: #f8f4eecf;
+}
+.hero-bottom p {
+  color: #f8f4eed9;
+}
+.atelier-mirror-copy > p {
+  color: #f6f2ecd1;
+}
+.atelier-button,
+.atelier-link,
+.edit-tab,
+.nav-mirror,
+.studio-desktop-nav a {
+  font-size: var(--type-small);
+  line-height: 1.5;
+}
+.atelier-button,
+.atelier-link {
+  font-weight: 600;
+}
+.atelier-edit .edit-tab {
+  font-size: var(--type-small);
+  min-height: 48px;
+}
+.hero-bottom {
+  gap: 32px;
+}
+.hero-bottom p {
+  max-width: 370px;
+}
+.hero-discover,
+.hero-mirror-link span {
+  font-size: var(--type-label);
+  letter-spacing: 0.06em;
+}
+.hero-edition {
+  font-size: var(--type-label);
+  letter-spacing: 0.08em;
+}
+.hero-side-note {
+  font-size: 11px;
+}
+.studio-wordmark > span {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+.studio-product-info h3 {
+  font-family: var(--font-sans), sans-serif;
+  font-size: var(--type-body);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+.studio-product-category,
+.studio-product-bottom {
+  font-size: var(--type-label);
+  line-height: 1.6;
+  color: #61585a;
+}
+.studio-product-price {
+  font-size: var(--type-body);
+  line-height: 1.4;
+}
+.studio-product-price s {
+  font-size: var(--type-small);
+}
+.studio-product-info {
+  gap: 12px;
+}
+.studio-product-bottom {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.product-badges > span {
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+}
+.product-badges {
+  max-width: calc(100% - 24px);
+}
+.look-product-list a {
+  font-size: var(--type-small);
+  line-height: 1.5;
+}
+.look-product-list small {
+  font-size: var(--type-label);
+  line-height: 1.5;
+}
+.look-product-list a > span:last-child {
+  font-size: var(--type-small);
+}
+.look-hotspot > span {
+  font-size: var(--type-small);
+  line-height: 1.4;
+}
+.mirror-process span,
+.mirror-process b {
+  font-size: var(--type-label);
+  line-height: 1.6;
+}
+.mirror-process span {
+  flex: 1;
+  min-width: 0;
+  color: #f6f2eccc;
+}
+.mirror-status-card small {
+  font-size: var(--type-label);
+}
+.mirror-status-card strong {
+  font-size: var(--type-small);
+  line-height: 1.5;
+}
+.mirror-status-card > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.mirror-status-card > svg {
+  flex-shrink: 0;
+}
+.mirror-editorial-note {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #bdc9e7c9;
+}
+.discover-caption h3 {
+  font-size: 28px;
+  line-height: 1.25;
+}
+.discover-caption > span,
+.discover-type-link > span:last-child {
+  font-size: var(--type-small);
+  line-height: 1.5;
+}
+.discover-index,
+.look-image-caption {
+  font-size: var(--type-label);
+  line-height: 1.6;
+}
+.discover-type-link > span:last-child {
+  position: static;
+  margin-top: 22px;
+}
+.discover-type-link > .atelier-label {
+  font-size: var(--type-label);
+}
+.stylist-interaction > div > p:nth-child(2) {
+  font-size: 30px;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+}
+.stylist-interaction .field {
+  font-size: var(--type-body);
+}
+.stylist-interaction form button {
+  font-size: var(--type-small);
+}
+.stylist-interaction form + div button {
+  font-size: var(--type-small);
+  line-height: 1.5;
+}
+.footer-top .studio-label {
+  font-size: var(--type-label);
+  color: #f5f2ebc4;
+}
+.footer-brand > p,
+.footer-note > p:not(.studio-label) {
+  font-size: var(--type-small);
+  line-height: 1.8;
+  color: #f5f2ebcc;
+}
+.footer-top nav,
+.footer-mirror {
+  font-size: var(--type-small);
+  line-height: 1.6;
+}
+.footer-bottom {
+  font-size: var(--type-label);
+  line-height: 1.6;
+  color: #f5f2ebc4;
+}
+.atelier-install-prompt .font-serif {
+  font-weight: 500;
+}
+.atelier-install-prompt p:last-child {
+  font-size: var(--type-small);
+  line-height: 1.6;
+}
+.atelier-install-prompt .btn-light {
+  font-size: var(--type-small);
+}
+.catalog-category-copy h1,
+.catalog-all-intro h1,
+.studio-product-details h1 {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.catalog-category-copy > p:not(.studio-label),
+.catalog-all-intro > p:last-child {
+  font-size: var(--type-body);
+  line-height: 1.75;
+  color: #61585a;
+}
+.studio-product-layout > nav {
+  font-size: var(--type-label);
+  line-height: 1.8;
+  color: #61585a;
+}
+.studio-product-details > p:not(.eyebrow) {
+  font-weight: 400;
+  line-height: 1.75;
+}
+.studio-product-details .text-ink\/40,
+.studio-product-details .text-ink\/65 {
+  color: #61585a;
+}
+.studio-product-details button[aria-pressed] {
+  font-size: var(--type-small);
+}
+.studio-bag-drawer .font-serif {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.studio-bag-drawer .text-ink\/35,
+.studio-bag-drawer .text-ink\/40 {
+  color: #61585a;
+}
+#store-content main .text-ink\/35,
+#store-content main .text-ink\/40 {
+  color: #61585a;
+}
+#store-content main input,
+#store-content main textarea,
+#store-content main select {
+  font-size: var(--type-body);
+}
+@media (max-width: 1100px) {
+  .studio-desktop-nav {
+    gap: 14px;
+  }
+  .studio-desktop-nav a {
+    font-size: 13px;
+  }
+  .studio-nav-actions {
+    gap: 10px;
+  }
+}
+@media (max-width: 899px) {
+  .hero-bottom {
+    align-items: start;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .hero-bottom p {
+    max-width: 350px;
+  }
+  .atelier-introduction {
+    grid-template-columns: 1fr 1fr;
+  }
+  .atelier-mirror-copy h2 {
+    font-size: 52px;
+  }
+  .discover-caption {
+    flex-direction: column;
+    align-items: start;
+  }
+  .mirror-status-card {
+    gap: 12px;
+  }
+  .mirror-status-icon {
+    display: none;
+  }
+}
+@media (max-width: 599px) {
+  .atelier-hero h1 {
+    font-size: clamp(44px, 13.8vw, 66px);
+    line-height: 1.1;
+  }
+  .atelier-hero-content {
+    bottom: 110px;
+  }
+  .atelier-hero-content > .atelier-label {
+    font-size: var(--type-label);
+    letter-spacing: 0.06em;
+  }
+  .atelier-hero {
+    min-height: 700px;
+  }
+  .hero-bottom p {
+    font-size: var(--type-small);
+    line-height: 1.7;
+  }
+  .hero-edition {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+  .hero-mirror-link {
+    gap: 8px;
+  }
+  .hero-mirror-link span {
+    font-size: var(--type-label);
+    letter-spacing: 0;
+  }
+  .hero-discover {
+    gap: 8px;
+    letter-spacing: 0;
+  }
+  .atelier-introduction {
+    grid-template-columns: 1fr;
+  }
+  .atelier-introduction h2 {
+    font-size: 32px;
+    line-height: 1.25;
+  }
+  .atelier-section-top {
+    align-items: start;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+  .atelier-edit-heading h2,
+  .discover-heading h2 {
+    font-size: 38px;
+    line-height: 1.15;
+  }
+  .studio-product-info h3 {
+    font-size: var(--type-small);
+  }
+  .studio-product-info {
+    gap: 7px;
+  }
+  .studio-product-price {
+    font-size: var(--type-small);
+  }
+  .studio-product-category,
+  .studio-product-bottom {
+    font-size: var(--type-label);
+  }
+  .product-badges {
+    max-width: calc(100% - 16px);
+  }
+  .product-badges > span {
+    font-size: 10px;
+  }
+  .look-hotspot {
+    left: 20%;
+    right: 6%;
+    gap: 8px;
+  }
+  .look-hotspot > span {
+    font-size: var(--type-label);
+  }
+  .look-hotspot > svg {
+    flex-shrink: 0;
+  }
+  .look-panel h2 {
+    font-size: 38px;
+    line-height: 1.2;
+  }
+  .atelier-mirror-copy h2 {
+    font-size: 48px;
+    line-height: 1.15;
+  }
+  .mirror-section-top {
+    align-items: start;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mirror-section-top > span {
+    font-size: var(--type-label);
+  }
+  .mirror-process {
+    gap: 12px;
+  }
+  .mirror-status-card {
+    padding: 14px;
+  }
+  .mirror-status-card small {
+    font-size: 11px;
+  }
+  .mirror-status-card strong {
+    font-size: 13px;
+  }
+  .mirror-editorial-note {
+    font-size: 11px;
+    letter-spacing: 0.03em;
+  }
+  .discover-caption h3 {
+    font-size: 24px;
+  }
+  .discover-caption > span {
+    font-size: var(--type-small);
+  }
+  .discover-type-link h3 {
+    font-size: 44px;
+    line-height: 1.15;
+  }
+  .stylist-intro h2 {
+    font-size: 36px;
+    line-height: 1.2;
+  }
+  .stylist-interaction > div > p:nth-child(2) {
+    font-size: 26px;
+    line-height: 1.35;
+  }
+  .atelier-signoff h2 {
+    font-size: clamp(40px, 11.5vw, 54px);
+    line-height: 1.15;
+  }
+  .atelier-signoff > .atelier-label,
+  .signoff-studio {
+    font-size: var(--type-label);
+    letter-spacing: 0.06em;
+  }
+  .footer-bottom {
+    gap: 12px;
+  }
+  .atelier-install-prompt p:last-child {
+    font-size: var(--type-small);
+  }
+}
+.btn,
+.btn-solid,
+.btn-light,
+.btn-ghost {
+  font-size: var(--type-small);
+  line-height: 1.5;
+}
+#store-content main button {
+  font-size: var(--type-small);
+}
+#store-content main .text-ink\/50,
+#store-content main .text-ink\/55 {
+  color: #6d6366;
+}
+.hero-edition {
+  flex-direction: column;
+  align-items: start;
+  gap: 6px;
+}
+@media (max-width: 599px) {
+  .atelier-hero {
+    height: calc(100svh - 4.25rem);
+    min-height: 620px;
+    max-height: 850px;
+  }
+}
+.hero-side-note,
+.mirror-editorial-note,
+.product-badges > span {
+  font-size: var(--type-label);
+}
+@media (max-width: 599px) {
+  .atelier-edit .edit-controls {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    column-gap: 20px;
+    row-gap: 0;
+  }
+  .product-badges > span,
+  .mirror-status-card small,
+  .mirror-editorial-note {
+    font-size: var(--type-label);
+  }
+}
+@media (min-width: 900px) and (max-width: 1100px) {
+  .studio-desktop-nav {
+    display: none;
+  }
+  .mobile-menu-button {
+    display: inline-flex;
+  }
+  .studio-nav > .studio-wordmark {
+    grid-column: 1;
+    justify-self: start;
+  }
+}
+#store-content main:not(.atelier-home) > h1 {
+  font-size: clamp(36px, 4.5vw, 64px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.recommended-section h2 {
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}

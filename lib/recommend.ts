@@ -54,13 +54,13 @@ function reasonFor(anchor: StoreProduct | undefined, pick: StoreProduct, query?:
     return `${pick.category.name} · ${pick.fabric}`;
   }
   if (anchor.category.slug !== pick.category.slug) {
-    return `Completes ${anchor.name} with ${pick.category.name.toLowerCase()} in ${pick.colors[0]?.name ?? "the house palette"}.`;
+    return `Completes ${anchor.name} with ${pick.category.name.toLowerCase()} in ${pick.colors[0]?.name ?? "a matching colour"}.`;
   }
   const shared = pick.colors.find((c) =>
     anchor.colors.some((x) => x.name.toLowerCase() === c.name.toLowerCase()),
   );
   if (shared) {
-    return `Same ${shared.name.toLowerCase()} register as ${anchor.name}.`;
+    return `Shares the ${shared.name.toLowerCase()} colour of ${anchor.name}.`;
   }
   return `Another ${pick.category.name.toLowerCase()} piece if you want a second option.`;
 }
@@ -132,7 +132,7 @@ function heuristic(
       eyebrow: "The stylist",
       headline: input.query?.trim()
         ? `Looks for “${input.query.trim()}”`
-        : "Pieces from the house",
+        : "Outfit suggestions",
       picks,
     };
   }
@@ -146,7 +146,7 @@ function heuristic(
   }
   return {
     source: "atelier",
-    eyebrow: "The edit",
+    eyebrow: "Suggestions",
     headline: "You may also like",
     picks,
   };
@@ -206,7 +206,7 @@ async function fromOpenAI(
           {
             role: "system",
             content:
-              "You are the stylist for Vela, a house for hoodies, t-shirts, trousers, and eyewear. Reply with JSON only: {\"headline\": string, \"picks\": [{\"slug\": string, \"reason\": string}]}. Pick 3 or 4 products. Use only slugs from the catalog. Reasons must be one short sentence, concrete (colour, fabric, occasion), no hype.",
+              "You are the stylist for Vela, a store for hoodies, t-shirts, trousers, and eyewear. Reply with JSON only: {\"headline\": string, \"picks\": [{\"slug\": string, \"reason\": string}]}. Pick 3 or 4 products. Use only slugs from the catalog. Reasons must be one short sentence, concrete (colour, fabric, occasion), no hype. Use a short, descriptive headline. Avoid slogans, poetic language, and editorial section labels.",
           },
           {
             role: "user",
@@ -259,7 +259,7 @@ async function fromOpenAI(
       headline:
         parsed.headline?.trim() ||
         (input.mode === "stylist"
-          ? "A look from the house"
+          ? "Suggested outfit"
           : "Worn with this piece"),
       picks,
     };

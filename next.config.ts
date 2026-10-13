@@ -18,6 +18,8 @@ const withSerwist = withSerwistInit({
 });
 
 const nextConfig: NextConfig = {
+  // Allow an isolated preview build alongside an existing development server.
+  distDir: process.env.VELA_BUILD_DIR || ".next",
   reactStrictMode: true,
   images: {
     remotePatterns: [

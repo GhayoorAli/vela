@@ -2,19 +2,26 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, Search, ShoppingBag, X } from "lucide-react";
-import { FormEvent, useEffect, useState } from "react";
+import {
+  ArrowUpRight,
+  Menu,
+  Search,
+  ShoppingBag,
+  Scan,
+  Sparkles,
+  X,
+} from "lucide-react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { CartDrawer } from "@/components/store/CartDrawer";
 
 const NAV = [
-  { href: "/shop", label: "Shop" },
+  { href: "/shop", label: "Collection" },
   { href: "/shop/hoodies", label: "Hoodies" },
-  { href: "/shop/tees", label: "Tees" },
+  { href: "/shop/tees", label: "T-shirts" },
   { href: "/shop/trousers", label: "Trousers" },
-  { href: "/shop/eyewear", label: "Frames" },
-  { href: "/try-on", label: "Try on" },
+  { href: "/shop/eyewear", label: "Eyewear" },
 ];
 
 export function Header() {
@@ -24,171 +31,212 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-  const [q, setQ] = useState("");
   const [scrolled, setScrolled] = useState(false);
-
-  const isHome = pathname === "/";
-  const transparent = isHome && !scrolled && !searchOpen && !open;
+  const [q, setQ] = useState("");
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const menuDialog = useRef<HTMLDivElement>(null);
+  const searchInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const update = () => setScrolled(window.scrollY > 80);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    menuDialog.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setOpen(false);
+        menuButton.current?.focus();
+      }
+      if (e.key === "Tab") {
+        const nodes =
+          menuDialog.current?.querySelectorAll<HTMLElement>("a, button");
+        if (!nodes?.length) return;
+        const first = nodes[0],
+          last = nodes[nodes.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+    window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKey);
     };
   }, [open]);
+  useEffect(() => {
+    if (searchOpen) searchInput.current?.focus();
+  }, [searchOpen]);
 
   function onSearch(e: FormEvent) {
     e.preventDefault();
-    const query = q.trim();
     setSearchOpen(false);
-    setOpen(false);
+    const query = q.trim();
     router.push(query ? `/shop?q=${encodeURIComponent(query)}` : "/shop");
   }
 
   return (
     <>
+      <a href="#store-content" className="skip-link">
+        Skip to content
+      </a>
       <header
-        className={`app-header sticky top-0 z-40 transition-all duration-700 ease-expo ${
-          transparent
-            ? "border-b border-transparent bg-transparent text-paper"
-            : "border-b border-ink/10 bg-paper/80 text-ink backdrop-blur-2xl"
-        }`}
+        className={`studio-header app-header ${pathname === "/" ? `header-over-campaign ${scrolled ? "header-scrolled" : ""}` : ""}`}
       >
-        <div className="mx-auto grid h-[4.5rem] max-w-frame grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 md:h-20 md:px-8">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              className="lg:hidden"
-              aria-label="Open menu"
-              onClick={() => setOpen(true)}
-            >
-              <Menu size={18} strokeWidth={1.5} />
-            </button>
-            <nav className="hidden items-center gap-5 lg:flex">
-              {NAV.map((item) => {
-                const active =
-                  item.href === "/shop"
-                    ? pathname === "/shop"
-                    : pathname.startsWith(item.href.split("?")[0]) &&
-                      item.href !== "/shop";
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`link-line font-sans text-[10px] font-medium uppercase tracking-[0.22em] ${
-                      active ? "opacity-100" : "opacity-55 hover:opacity-100"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-
-          <Link
-            href="/"
-            className="font-serif text-[32px] leading-none tracking-tight transition duration-500 ease-expo hover:italic md:text-[38px]"
-          >
-            Vela
+        <div className="studio-nav">
+          <Link href="/" className="studio-wordmark" aria-label="Vela home">
+            VELA<span>STUDIO</span>
           </Link>
-
-          <div className="flex items-center justify-end gap-4">
-            <button
-              type="button"
-              aria-label="Search"
-              onClick={() => setSearchOpen((v) => !v)}
-            >
-              <Search size={18} strokeWidth={1.5} />
-            </button>
-            <Link
-              href="/admin"
-              aria-label="Admin"
-              className="hidden font-sans text-[10px] uppercase tracking-[0.22em] opacity-50 hover:opacity-100 sm:block"
-            >
-              Account
-            </Link>
-            <button
-              type="button"
-              aria-label="Open bag"
-              className="relative"
-              onClick={() => setCartOpen(true)}
-            >
-              <ShoppingBag size={18} strokeWidth={1.5} />
-              {count > 0 && (
-                <span
-                  className={`absolute -right-2.5 -top-2 flex h-4 min-w-4 items-center justify-center px-1 font-sans text-[9px] ${
-                    transparent ? "bg-paper text-ink" : "bg-ink text-paper"
-                  }`}
-                >
-                  {count}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {searchOpen && (
-          <form
-            onSubmit={onSearch}
-            className="mx-auto flex max-w-frame items-center gap-3 border-t border-ink/10 px-4 py-4 md:px-8"
-          >
-            <Search size={16} className="opacity-40" />
-            <input
-              autoFocus
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search hoodies, tees, frames…"
-              className="w-full bg-transparent font-sans text-sm outline-none placeholder:opacity-40"
-            />
-            <button
-              type="submit"
-              className="font-sans text-[10px] uppercase tracking-[0.22em]"
-            >
-              Search
-            </button>
-          </form>
-        )}
-      </header>
-
-      {open && (
-        <div className="fixed inset-0 z-50 bg-ink text-paper lg:hidden">
-          <div className="flex h-16 items-center justify-between px-5">
-            <span className="font-serif text-3xl">Vela</span>
-            <button type="button" aria-label="Close menu" onClick={() => setOpen(false)}>
-              <X size={22} strokeWidth={1.5} />
-            </button>
-          </div>
-          <nav className="flex flex-col gap-1 px-6 pt-10">
-            {NAV.map((item, i) => (
+          <nav className="studio-desktop-nav" aria-label="Main navigation">
+            {NAV.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => setOpen(false)}
-                className="font-serif text-4xl leading-[1.05] animate-fade-up sm:text-5xl"
-                style={{ animationDelay: `${i * 60}ms` }}
+                aria-current={pathname === item.href ? "page" : undefined}
               >
                 {item.label}
               </Link>
             ))}
+          </nav>
+          <div className="studio-nav-actions">
             <Link
-              href="/admin"
-              onClick={() => setOpen(false)}
-              className="mt-10 font-sans text-[11px] uppercase tracking-[0.22em] text-paper/50"
+              href="/stylist"
+              className="nav-feature-link nav-ai"
+              aria-current={pathname === "/stylist" ? "page" : undefined}
             >
-              Account
+              <Sparkles size={16} /> AI stylist
             </Link>
+            <Link href="/try-on" className="nav-feature-link nav-ar">
+              <Scan size={16} /> AR try-on
+            </Link>
+            <button
+              type="button"
+              className="nav-icon"
+              aria-label="Search products"
+              aria-expanded={searchOpen}
+              aria-controls="store-search"
+              onClick={() => setSearchOpen(!searchOpen)}
+            >
+              {searchOpen ? <X size={19} /> : <Search size={19} />}
+            </button>
+            <button
+              type="button"
+              className="nav-icon nav-bag"
+              aria-label={`Open bag, ${count} items`}
+              onClick={() => setCartOpen(true)}
+            >
+              <ShoppingBag size={19} />
+              <span>{count}</span>
+            </button>
+            <button
+              ref={menuButton}
+              type="button"
+              className="nav-icon mobile-menu-button"
+              aria-label="Open navigation"
+              aria-expanded={open}
+              onClick={() => setOpen(true)}
+            >
+              <Menu size={21} />
+            </button>
+          </div>
+        </div>
+        <nav className="mobile-feature-nav" aria-label="Shopping features">
+          <Link
+            href="/stylist"
+            aria-current={pathname === "/stylist" ? "page" : undefined}
+          >
+            <Sparkles size={16} />
+            <span>AI stylist</span>
+            <ArrowUpRight size={14} />
+          </Link>
+          <Link href="/try-on">
+            <Scan size={16} />
+            <span>AR try-on</span>
+            <ArrowUpRight size={14} />
+          </Link>
+        </nav>
+        {searchOpen && (
+          <form
+            id="store-search"
+            onSubmit={onSearch}
+            className="studio-search"
+            role="search"
+          >
+            <Search size={20} />
+            <input
+              ref={searchInput}
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") setSearchOpen(false);
+              }}
+              placeholder="Search products…"
+              aria-label="Search products"
+            />
+            <button type="submit">
+              Search <ArrowUpRight size={16} />
+            </button>
+          </form>
+        )}
+      </header>
+      {open && (
+        <div
+          ref={menuDialog}
+          className="studio-mobile-menu"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation"
+        >
+          <div className="mobile-menu-top">
+            <Link
+              href="/"
+              className="studio-wordmark"
+              onClick={() => setOpen(false)}
+            >
+              VELA<span>STUDIO</span>
+            </Link>
+            <button
+              className="nav-icon"
+              type="button"
+              aria-label="Close navigation"
+              onClick={() => {
+                setOpen(false);
+                menuButton.current?.focus();
+              }}
+            >
+              <X size={24} />
+            </button>
+          </div>
+          <p className="studio-label">SHOP</p>
+          <nav>
+            {[
+              ...NAV,
+              { href: "/stylist", label: "AI personal stylist" },
+              { href: "/try-on", label: "AR fitting room" },
+            ].map((item, i) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+              >
+                <span>{item.label}</span>
+                <small>{String(i + 1).padStart(2, "0")}</small>
+              </Link>
+            ))}
           </nav>
         </div>
       )}
-
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </>
   );
